@@ -1,69 +1,93 @@
-/* macOS-style menu bar, Everforest glass (~/.config/waybar/style.css) */
+/* Floating rounded bar, Everforest glass (~/.config/waybar/style.css) */
 
 * {
     font-family: "Inter", "JetBrainsMono Nerd Font", sans-serif;
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
     min-height: 0;
     border: none;
     border-radius: 0;
     box-shadow: none;
 }
 
-/* Translucent so Hyprland's blur shows through */
+/* The bar itself: one translucent rounded pill (blurred by Hyprland) */
 window#waybar {
-    background: rgba(20, 24, 24, 0.55);
+    background: rgba(20, 24, 24, 0.60);
     color: #d3c6aa;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 tooltip {
-    background: rgba(20, 24, 24, 0.92);
+    background: rgba(20, 24, 24, 0.94);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 10px;
 }
-tooltip label { color: #d3c6aa; padding: 4px; }
+tooltip label { color: #d3c6aa; padding: 4px 6px; }
 
-/* Every module: flat, no pill boxes; subtle highlight on hover */
-#custom-launcher, #window, #mpris, #tray, #pulseaudio, #bluetooth,
-#network, #battery, #custom-notification, #clock, #custom-power {
+/* Shared look for every module: soft inner chip, highlight on hover */
+#clock, #mpris, #status, #battery, #custom-notification, #custom-power {
+    margin: 4px 3px;
+    padding: 0 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #d3c6aa;
+    transition: background 0.15s ease;
+}
+
+#clock:hover, #mpris:hover, #battery:hover,
+#custom-notification:hover, #custom-power:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+#clock { margin-left: 4px; }
+#mpris { color: #a7c080; }
+
+/* Grouped icons: volume / wifi / bluetooth inside one chip */
+#status { padding: 0 4px; }
+#pulseaudio, #network, #bluetooth {
     padding: 0 9px;
+    margin: 2px 0;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 400;
+}
+#pulseaudio:hover, #network:hover, #bluetooth:hover { background: rgba(255, 255, 255, 0.12); }
+
+#pulseaudio.muted, #network.disconnected,
+#bluetooth.off, #bluetooth.disabled { color: #859289; }
+#bluetooth.connected { color: #7fbbb3; }
+
+#battery.charging, #battery.plugged       { color: #a7c080; }
+#battery.warning:not(.charging)           { color: #dbbc7f; }
+#battery.critical:not(.charging)          { color: #e67e80; }
+
+#custom-notification { font-size: 15px; font-weight: 400; padding: 0 10px; }
+
+#custom-power {
+    margin-right: 4px;
+    padding: 0 12px;
+    color: #e67e80;
+    font-size: 14px;
+}
+#custom-power:hover { background: rgba(230, 126, 128, 0.22); }
+
+/* Workspaces: numbers, active one filled */
+#workspaces {
+    margin: 4px 0;
+    padding: 0 3px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+}
+#workspaces button {
+    min-width: 24px;
+    padding: 0 6px;
     margin: 3px 1px;
     border-radius: 6px;
-    background: transparent;
-    color: #d3c6aa;
-}
-
-#custom-launcher:hover, #mpris:hover, #pulseaudio:hover, #bluetooth:hover,
-#network:hover, #battery:hover, #custom-notification:hover, #clock:hover,
-#custom-power:hover {
-    background: rgba(255, 255, 255, 0.10);
-}
-
-#custom-launcher { font-size: 16px; color: #7fbbb3; padding: 0 12px 0 14px; }
-#window          { font-weight: 700; }
-#clock           { padding-right: 6px; }
-#custom-power    { padding: 0 14px 0 9px; }
-#mpris           { color: #a7c080; }
-
-/* Icon-only modules a touch larger */
-#pulseaudio, #bluetooth, #network, #custom-notification { font-size: 15px; }
-
-#battery.warning:not(.charging)  { color: #dbbc7f; }
-#battery.critical:not(.charging) { color: #e67e80; }
-#network.disconnected, #bluetooth.disabled, #bluetooth.off, #pulseaudio.muted { color: #859289; }
-
-/* Workspaces as dots */
-#workspaces { margin: 0 4px; }
-#workspaces button {
-    padding: 0 5px;
-    margin: 4px 1px;
     color: #859289;
     background: transparent;
-    font-size: 11px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
 }
-#workspaces button.active { color: #7fbbb3; }
-#workspaces button.empty  { color: #4f585e; }
-#workspaces button:hover  { background: rgba(255, 255, 255, 0.10); color: #d3c6aa; }
+#workspaces button:hover  { background: rgba(255, 255, 255, 0.12); color: #d3c6aa; }
+#workspaces button.active { background: #7fbbb3; color: #1e2524; }
+#workspaces button.urgent { background: #e67e80; color: #1e2524; }
