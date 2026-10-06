@@ -1,57 +1,69 @@
+/* macOS-style menu bar, Everforest glass (~/.config/waybar/style.css) */
+
 * {
+    font-family: "Inter", "JetBrainsMono Nerd Font", sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    min-height: 0;
     border: none;
     border-radius: 0;
-    font-family: "JetBrainsMono Nerd Font", "Inter", sans-serif;
-    font-size: 13px;
-    min-height: 0;
+    box-shadow: none;
 }
 
+/* Translucent so Hyprland's blur shows through */
 window#waybar {
-    background: rgba(14, 18, 18, 0.88);
+    background: rgba(20, 24, 24, 0.55);
     color: #d3c6aa;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-#workspaces button {
-    padding: 2px 10px;
-    color: #707880;
+tooltip {
+    background: rgba(20, 24, 24, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 10px;
-    margin: 3px 2px;
+}
+tooltip label { color: #d3c6aa; padding: 4px; }
+
+/* Every module: flat, no pill boxes; subtle highlight on hover */
+#custom-launcher, #window, #mpris, #tray, #pulseaudio, #bluetooth,
+#network, #battery, #custom-notification, #clock, #custom-power {
+    padding: 0 9px;
+    margin: 3px 1px;
+    border-radius: 6px;
+    background: transparent;
+    color: #d3c6aa;
+}
+
+#custom-launcher:hover, #mpris:hover, #pulseaudio:hover, #bluetooth:hover,
+#network:hover, #battery:hover, #custom-notification:hover, #clock:hover,
+#custom-power:hover {
+    background: rgba(255, 255, 255, 0.10);
+}
+
+#custom-launcher { font-size: 16px; color: #7fbbb3; padding: 0 12px 0 14px; }
+#window          { font-weight: 700; }
+#clock           { padding-right: 6px; }
+#custom-power    { padding: 0 14px 0 9px; }
+#mpris           { color: #a7c080; }
+
+/* Icon-only modules a touch larger */
+#pulseaudio, #bluetooth, #network, #custom-notification { font-size: 15px; }
+
+#battery.warning:not(.charging)  { color: #dbbc7f; }
+#battery.critical:not(.charging) { color: #e67e80; }
+#network.disconnected, #bluetooth.disabled, #bluetooth.off, #pulseaudio.muted { color: #859289; }
+
+/* Workspaces as dots */
+#workspaces { margin: 0 4px; }
+#workspaces button {
+    padding: 0 5px;
+    margin: 4px 1px;
+    color: #859289;
+    background: transparent;
+    font-size: 11px;
+    border-radius: 6px;
     transition: all 0.2s ease;
 }
-
-#workspaces button.active {
-    color: #1e2524;
-    background: #7fbbb3;
-    font-weight: bold;
-}
-
-#workspaces button:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #d3c6aa;
-}
-
-#clock, #pulseaudio, #battery, #network, #custom-notification, #custom-power, #custom-spotify {
-    padding: 2px 12px;
-    margin: 3px 4px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    color: #d3c6aa;
-}
-
-#custom-power {
-    color: #e67e80;
-    font-size: 15px;
-    padding: 2px 10px;
-}
-
-#custom-power:hover {
-    background: rgba(230, 126, 128, 0.25);
-    color: #f85552;
-}
-
-#network:hover {
-    background: rgba(127, 187, 179, 0.25);
-    color: #7fbbb3;
-}
+#workspaces button.active { color: #7fbbb3; }
+#workspaces button.empty  { color: #4f585e; }
+#workspaces button:hover  { background: rgba(255, 255, 255, 0.10); color: #d3c6aa; }

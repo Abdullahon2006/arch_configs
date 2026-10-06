@@ -5,16 +5,16 @@
  * ========================================================================== */
 
 * {
-    bg:        #14181899;   /* ~60% opacity -> blur visible */
-    bg-alt:    #ffffff0d;
-    border:    #ffffff1a;
+    bg:        #14181870;   /* ~45% opacity -> blur clearly visible */
+    bg-alt:    #ffffff12;
+    border:    #ffffff1f;
     fg:        #d3c6aa;
     fg-dim:    #859289;
     accent:    #7fbbb3;
     accent-fg: #1e2524;
     urgent:    #e67e80;
 
-    font: "Inter 12";
+    font: "Inter, JetBrainsMono Nerd Font 12";
     background-color: transparent;
     text-color: @fg;
 }
