@@ -27,42 +27,25 @@ else
 fi
 
 chosen=$(echo -e "$menu_content" | rofi -dmenu -i -p "Wi-Fi" \
+    -theme ~/.config/rofi/theme.rasi \
     -theme-str '
     window {
-        width: 380px;
-        border-radius: 18px;
-        background-color: #141818fa;
-        border: 2px;
-        border-color: #343f44;
-        padding: 18px;
-        location: top right;
-        anchor: top right;
-        x-offset: -16px;
-        y-offset: 46px;
-    }
-    entry {
-        placeholder: "Search Wi-Fi networks...";
-        padding: 8px 12px;
-        margin: 0 0 10px 0;
-        background-color: #1e2524;
-        border-radius: 10px;
-        text-color: #d3c6aa;
+        width: 360px;
+        location: northeast;
+        anchor: northeast;
+        x-offset: -80px;
+        y-offset: 44px;
+        border-radius: 16px;
     }
     listview {
         lines: 8;
         spacing: 4px;
-        scrollbar: false;
     }
     element {
         padding: 10px 14px;
         border-radius: 10px;
-        text-color: #d3c6aa;
     }
-    element selected {
-        background-color: #7fbbb3;
-        text-color: #1e2524;
-        font-weight: bold;
-    }
+
 ')
 
 if [ -z "$chosen" ]; then
