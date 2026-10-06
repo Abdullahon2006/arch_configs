@@ -1,95 +1,224 @@
 #!/usr/bin/env bash
+# =============================================================================
+# Wi-Fi Quick Menu (~/.config/rofi/rofi-wifi-menu.sh)
+# Structured layout, on/off toggle card, and click-outside dismissal
+# =============================================================================
+
+# If already open, toggle it closed
+if pgrep -x rofi >/dev/null; then
+    pkill -x rofi
+    exit 0
+fi
 
 wifi_status=$(nmcli -fields WIFI g 2>/dev/null | tail -n 1 | tr -d ' ')
 
 if [ "$wifi_status" = "enabled" ]; then
-    toggle="󰤮  Turn Wi-Fi Off"
+    toggle="󰤮  Wi-Fi : Enabled                  [ Turn OFF ]"
+    rescan="󰑐  Rescan Networks                  [ Refresh ]"
+    settings="⚙  Network Connections              [ Open GUI ]"
+    divider="── Available Networks ──────────────────────────"
+
+    # Get clean, deduplicated wifi list formatted into structured columns
+    wifi_list=$(nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY device wifi list --rescan no 2>/dev/null | awk -F: '
+    !seen[$2]++ && $2 != "" {
+        in_use = ($1 ~ /\*/) ? "(Connected)" : "           "
+        sec = ($4 != "" && $4 != "--") ? "" : ""
+        icon = ($1 ~ /\*/) ? "󰤨" : "󰤪"
+        printf "%s  %-20.20s  %s %3s%%  %s\n", icon, $2, in_use, $3, sec
+    }')
+
+    if [ -n "$wifi_list" ]; then
+        menu_content="$toggle\n$rescan\n$settings\n$divider\n$wifi_list"
+    else
+        menu_content="$toggle\n$rescan\n$settings"
+    fi
 else
-    toggle="󰤨  Turn Wi-Fi On"
+    toggle="󰤨  Wi-Fi : Disabled                 [ Turn ON ]"
+    settings="⚙  Network Connections              [ Open GUI ]"
+    menu_content="$toggle\n$settings"
 fi
 
-if [ "$wifi_status" = "enabled" ]; then
-    wifi_list=$(nmcli --fields "SECURITY,SSID,BARS" device wifi list 2>/dev/null | tail -n +2 | \
-        sed 's/  */ /g' | sed -E 's/^ *//;s/ *$//' | \
-        awk '{
-            sec=$1; bars=$NF;
-            $1=""; $NF="";
-            ssid=$0;
-            sub(/^ */, "", ssid); sub(/ *$/, "", ssid);
-            if (ssid != "--" && ssid != "") {
-                if (sec == "--") icon="󰤨"; else icon="󰤪";
-                print icon " " ssid "  [" bars "]"
-            }
-        }' | sort -u)
-    menu_content="$toggle\n󰑐  Rescan Networks\n⚙  Network Connections\n$wifi_list"
-else
-    menu_content="$toggle\n⚙  Network Connections"
-fi
+line_count=$(echo -e "$menu_content" | wc -l)
+[ "$line_count" -gt 10 ] && line_count=10
+[ "$line_count" -lt 2 ] && line_count=2
+
+menu_height=$(( 80 + line_count * 38 ))
+[ "$menu_height" -gt 460 ] && menu_height=460
+[ "$menu_height" -lt 180 ] && menu_height=180
 
 chosen=$(echo -e "$menu_content" | rofi -dmenu -i -p "Wi-Fi" \
-    -theme ~/.config/rofi/theme.rasi \
-    -theme-str '
+    -click-to-exit \
+    -theme-str "
+    * {
+        font: \"JetBrainsMono Nerd Font 10.5\";
+        background-color: transparent;
+        text-color: #d3c6aa;
+    }
     window {
-        width: 360px;
-        location: northeast;
-        anchor: northeast;
-        x-offset: -80px;
-        y-offset: 44px;
-        border-radius: 16px;
+        fullscreen: true;
+        background-color: transparent;
+    }
+    mainbox {
+        orientation: horizontal;
+        children: [ dummy-left, right-col ];
+        background-color: transparent;
+    }
+    dummy-left {
+        expand: true;
+        background-color: transparent;
+    }
+    right-col {
+        orientation: vertical;
+        width: 460px;
+        expand: false;
+        children: [ menubox, dummy-bottom ];
+        background-color: transparent;
+    }
+    dummy-bottom {
+        expand: true;
+        background-color: transparent;
+    }
+    menubox {
+        orientation: vertical;
+        height: ${menu_height}px;
+        margin: 46px 12px 0px 0px;
+        background-color: #141a1af2;
+        border: 1px;
+        border-color: #ffffff24;
+        border-radius: 18px;
+        padding: 14px;
+        children: [ inputbar, listview ];
+    }
+    inputbar {
+        padding: 8px 12px;
+        margin: 0px 0px 10px 0px;
+        background-color: #ffffff0f;
+        border: 1px;
+        border-color: #ffffff14;
+        border-radius: 12px;
+        spacing: 8px;
+        children: [ prompt, entry ];
+    }
+    prompt {
+        text-color: #7fbbb3;
+    }
+    entry {
+        placeholder: \"Search networks...\";
+        placeholder-color: #859289;
+        text-color: #d3c6aa;
     }
     listview {
-        lines: 8;
+        lines: $line_count;
+        fixed-height: false;
         spacing: 4px;
+        scrollbar: false;
     }
     element {
-        padding: 10px 14px;
+        padding: 8px 12px;
         border-radius: 10px;
+        background-color: transparent;
+        text-color: #d3c6aa;
     }
+    element normal.normal {
+        background-color: transparent;
+        text-color: #d3c6aa;
+    }
+    element alternate.normal {
+        background-color: transparent;
+        text-color: #d3c6aa;
+    }
+    element selected.normal {
+        background-color: #7fbbb3;
+        text-color: #1e2524;
+    }
+    element-text {
+        background-color: transparent;
+        text-color: inherit;
+    }
+")
 
-')
+[ -z "$chosen" ] && exit 0
 
-if [ -z "$chosen" ]; then
-    exit 0
-fi
+case "$chosen" in
+    *"Turn OFF"*)
+        nmcli radio wifi off
+        notify-send "Wi-Fi" "Wi-Fi disabled" -i network-wireless-offline
+        ;;
+    *"Turn ON"*)
+        nmcli radio wifi on
+        notify-send "Wi-Fi" "Wi-Fi enabled" -i network-wireless-signal-good
+        ;;
+    *"Rescan"*)
+        notify-send "Wi-Fi" "Scanning for networks..." -i network-wireless
+        nmcli device wifi rescan 2>/dev/null
+        sleep 1
+        exec "$0"
+        ;;
+    *"Network Connections"*)
+        nm-connection-editor &
+        ;;
+    *"──"*)
+        # Separator line clicked, do nothing
+        exit 0
+        ;;
+    *)
+        # Extract SSID from structured line (offset 3, length 20)
+        ssid="${chosen:3:20}"
+        # Trim trailing whitespace
+        ssid="${ssid%"${ssid##*[! ]}"}"
 
-if [[ "$chosen" == *"Turn Wi-Fi Off"* ]]; then
-    nmcli radio wifi off
-    notify-send "Wi-Fi" "Wi-Fi interface disabled"
-elif [[ "$chosen" == *"Turn Wi-Fi On"* ]]; then
-    nmcli radio wifi on
-    notify-send "Wi-Fi" "Wi-Fi interface enabled"
-elif [[ "$chosen" == *"Rescan Networks"* ]]; then
-    notify-send "Wi-Fi" "Scanning for available networks..."
-    nmcli device wifi rescan
-    exec "$0"
-elif [[ "$chosen" == *"Network Connections"* ]]; then
-    nm-connection-editor &
-else
-    ssid=$(echo "$chosen" | sed 's/^[󰤨󰤪 ]*//' | sed 's/ *\[.*\]$//')
-    connection_exists=$(nmcli -g NAME connection show | grep -Fx "$ssid" || true)
-    
-    if [ -n "$connection_exists" ]; then
-        notify-send "Wi-Fi" "Connecting to $ssid..."
-        if nmcli connection up "$ssid"; then
-            notify-send "Wi-Fi" "Connected to $ssid successfully!"
-        else
-            notify-send "Wi-Fi" "Failed to connect to $ssid"
+        if [ -z "$ssid" ]; then
+            exit 0
         fi
-    else
-        pass=$(rofi -dmenu -password -p "Password for $ssid" \
-            -theme-str '
-            window { width: 320px; border-radius: 16px; background-color: #141818fa; border: 2px; border-color: #7fbbb3; padding: 16px; }
-            entry { padding: 10px; background-color: #1e2524; border-radius: 8px; text-color: #d3c6aa; }
-            listview { enabled: false; }
-            ')
-        
-        if [ -n "$pass" ]; then
-            notify-send "Wi-Fi" "Connecting to $ssid..."
-            if nmcli device wifi connect "$ssid" password "$pass"; then
-                notify-send "Wi-Fi" "Connected to $ssid!"
+
+        # If already connected
+        if echo "$chosen" | grep -q "(Connected)"; then
+            notify-send "Wi-Fi" "Already connected to $ssid" -i network-wireless-connected
+            exit 0
+        fi
+
+        # Check if saved connection exists
+        saved=$(nmcli -t -f NAME connection show | grep -F "$ssid" || true)
+
+        if [ -n "$saved" ]; then
+            notify-send "Wi-Fi" "Connecting to $ssid..." -i network-wireless-acquiring
+            if nmcli connection up "$ssid"; then
+                notify-send "Wi-Fi" "Successfully connected to $ssid" -i network-wireless-connected
             else
-                notify-send "Wi-Fi" "Connection failed. Check password."
+                notify-send "Wi-Fi" "Failed to connect to $ssid" -i dialog-error
+            fi
+        else
+            # Prompt for password if secured
+            if echo "$chosen" | grep -q ""; then
+                pwd=$(rofi -dmenu -password -p "Password for $ssid" -click-to-exit \
+                    -theme-str '
+                    * { font: "JetBrainsMono Nerd Font 10.5"; background-color: transparent; text-color: #d3c6aa; }
+                    window { fullscreen: true; background-color: transparent; }
+                    mainbox { orientation: horizontal; children: [ dummy-left, right-col ]; }
+                    dummy-left { expand: true; }
+                    right-col { orientation: vertical; width: 380px; expand: false; children: [ menubox, dummy-bottom ]; }
+                    dummy-bottom { expand: true; }
+                    menubox { height: 70px; margin: 46px 12px 0px 0px; background-color: #141a1af2; border: 1px; border-color: #ffffff24; border-radius: 16px; padding: 14px; children: [ inputbar ]; }
+                    inputbar { padding: 8px 12px; background-color: #ffffff0f; border-radius: 10px; children: [ prompt, entry ]; }
+                    prompt { text-color: #7fbbb3; margin: 0 8px 0 0; }
+                    entry { text-color: #d3c6aa; }
+                ')
+                [ -z "$pwd" ] && exit 0
+                notify-send "Wi-Fi" "Connecting to $ssid..." -i network-wireless-acquiring
+                if nmcli device wifi connect "$ssid" password "$pwd"; then
+                    notify-send "Wi-Fi" "Successfully connected to $ssid" -i network-wireless-connected
+                else
+                    notify-send "Wi-Fi" "Failed to connect to $ssid" -i dialog-error
+                fi
+            else
+                # Open network
+                notify-send "Wi-Fi" "Connecting to $ssid..." -i network-wireless-acquiring
+                if nmcli device wifi connect "$ssid"; then
+                    notify-send "Wi-Fi" "Successfully connected to $ssid" -i network-wireless-connected
+                else
+                    notify-send "Wi-Fi" "Failed to connect to $ssid" -i dialog-error
+                fi
             fi
         fi
-    fi
-fi
+        ;;
+esac

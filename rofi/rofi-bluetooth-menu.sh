@@ -1,88 +1,198 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Bluetooth quick menu for Waybar (~/.config/rofi/rofi-bluetooth-menu.sh)
+# Bluetooth Quick Menu (~/.config/rofi/rofi-bluetooth-menu.sh)
+# Structured layout, on/off toggle card, and click-outside dismissal
 # =============================================================================
+
+# If already open, toggle it closed
+if pgrep -x rofi >/dev/null; then
+    pkill -x rofi
+    exit 0
+fi
 
 # Check if bluetooth is powered on
 power_state=$(bluetoothctl show 2>/dev/null | grep -i "Powered:" | awk '{print $2}')
 
 if [ "$power_state" = "yes" ]; then
-    toggle="󰂲  Turn Bluetooth Off"
-else
-    toggle="󰂯  Turn Bluetooth On"
-fi
+    toggle="󰂲  Bluetooth : Enabled              [ Turn OFF ]"
+    scan="󰑐  Scan for Nearby Devices          [ Scan 10s ]"
+    settings="⚙  Bluetooth Manager (Blueman)      [ Open GUI ]"
+    divider="── Paired Devices ──────────────────────────────"
 
-menu="$toggle\n⚙  Bluetooth Settings (Blueman)"
-
-if [ "$power_state" = "yes" ]; then
-    # Get paired devices
-    devices=$(bluetoothctl devices Paired 2>/dev/null | cut -d ' ' -f 2-)
-    if [ -n "$devices" ]; then
-        menu="$menu\n--- Paired Devices ---"
+    # Get paired devices formatted into structured columns
+    device_lines=""
+    paired_list=$(bluetoothctl devices Paired 2>/dev/null)
+    if [ -n "$paired_list" ]; then
         while IFS= read -r dev; do
-            mac=$(echo "$dev" | awk '{print $1}')
-            name=$(echo "$dev" | cut -d ' ' -f 2-)
+            [ -z "$dev" ] && continue
+            mac=$(echo "$dev" | awk '{print $2}')
+            name=$(echo "$dev" | cut -d ' ' -f 3-)
+            [ -z "$name" ] && name="$mac"
+
             # Check if connected
-            info=$(bluetoothctl info "$mac" 2>/dev/null)
-            if echo "$info" | grep -q "Connected: yes"; then
-                menu="$menu\n󰂱  Disconnect $name [$mac]"
+            if bluetoothctl info "$mac" 2>/dev/null | grep -q "Connected: yes"; then
+                printf -v line "󰂱  %-20.20s  (Connected)  [ Disconnect ]" "$name"
             else
-                menu="$menu\n󰂯  Connect $name [$mac]"
+                printf -v line "󰂯  %-20.20s  (Paired)     [ Connect ]" "$name"
             fi
-        done <<< "$devices"
+            device_lines="${device_lines}\n${line}"
+        done <<< "$paired_list"
     fi
-    menu="$menu\n󰑐  Scan for Nearby Devices"
+
+    if [ -n "$device_lines" ]; then
+        menu_content="${toggle}\n${scan}\n${settings}\n${divider}${device_lines}"
+    else
+        menu_content="${toggle}\n${scan}\n${settings}"
+    fi
+else
+    toggle="󰂯  Bluetooth : Disabled             [ Turn ON ]"
+    settings="⚙  Bluetooth Manager (Blueman)      [ Open GUI ]"
+    menu_content="${toggle}\n${settings}"
 fi
 
-chosen=$(echo -e "$menu" | rofi -dmenu -i -p "Bluetooth" \
-    -theme ~/.config/rofi/theme.rasi \
-    -theme-str '
-    window {
-        width: 320px;
-        location: northeast;
-        anchor: northeast;
-        x-offset: -110px;
-        y-offset: 44px;
-        border-radius: 16px;
+line_count=$(echo -e "$menu_content" | wc -l)
+[ "$line_count" -gt 10 ] && line_count=10
+[ "$line_count" -lt 2 ] && line_count=2
+
+menu_height=$(( 80 + line_count * 38 ))
+[ "$menu_height" -gt 460 ] && menu_height=460
+[ "$menu_height" -lt 180 ] && menu_height=180
+
+chosen=$(echo -e "$menu_content" | rofi -dmenu -i -p "Bluetooth" \
+    -click-to-exit \
+    -theme-str "
+    * {
+        font: \"JetBrainsMono Nerd Font 10.5\";
+        background-color: transparent;
+        text-color: #d3c6aa;
     }
-    mainbox  { children: [ inputbar, listview ]; }
-    listview { lines: 7; spacing: 4px; }
-    element  { padding: 10px 14px; border-radius: 10px; }
-')
+    window {
+        fullscreen: true;
+        background-color: transparent;
+    }
+    mainbox {
+        orientation: horizontal;
+        children: [ dummy-left, right-col ];
+        background-color: transparent;
+    }
+    dummy-left {
+        expand: true;
+        background-color: transparent;
+    }
+    right-col {
+        orientation: vertical;
+        width: 460px;
+        expand: false;
+        children: [ menubox, dummy-bottom ];
+        background-color: transparent;
+    }
+    dummy-bottom {
+        expand: true;
+        background-color: transparent;
+    }
+    menubox {
+        orientation: vertical;
+        height: ${menu_height}px;
+        margin: 46px 12px 0px 0px;
+        background-color: #141a1af2;
+        border: 1px;
+        border-color: #ffffff24;
+        border-radius: 18px;
+        padding: 14px;
+        children: [ inputbar, listview ];
+    }
+    inputbar {
+        padding: 8px 12px;
+        margin: 0px 0px 10px 0px;
+        background-color: #ffffff0f;
+        border: 1px;
+        border-color: #ffffff14;
+        border-radius: 12px;
+        spacing: 8px;
+        children: [ prompt, entry ];
+    }
+    prompt {
+        text-color: #7fbbb3;
+    }
+    entry {
+        placeholder: \"Search devices...\";
+        placeholder-color: #859289;
+        text-color: #d3c6aa;
+    }
+    listview {
+        lines: $line_count;
+        fixed-height: false;
+        spacing: 4px;
+        scrollbar: false;
+    }
+    element {
+        padding: 8px 12px;
+        border-radius: 10px;
+        background-color: transparent;
+        text-color: #d3c6aa;
+    }
+    element normal.normal {
+        background-color: transparent;
+        text-color: #d3c6aa;
+    }
+    element alternate.normal {
+        background-color: transparent;
+        text-color: #d3c6aa;
+    }
+    element selected.normal {
+        background-color: #7fbbb3;
+        text-color: #1e2524;
+    }
+    element-text {
+        background-color: transparent;
+        text-color: inherit;
+    }
+")
 
 [ -z "$chosen" ] && exit 0
 
 case "$chosen" in
-    *"Turn Bluetooth On")
+    *"Turn ON"*)
         rfkill unblock bluetooth 2>/dev/null
         bluetoothctl power on
-        notify-send "Bluetooth" "Powered ON" -i bluetooth-active
+        notify-send "Bluetooth" "Bluetooth powered ON" -i bluetooth-active
+        sleep 0.5
+        exec "$0"
         ;;
-    *"Turn Bluetooth Off")
+    *"Turn OFF"*)
         bluetoothctl power off
-        notify-send "Bluetooth" "Powered OFF" -i bluetooth-disabled
+        notify-send "Bluetooth" "Bluetooth powered OFF" -i bluetooth-disabled
         ;;
-    *"Bluetooth Settings"*)
-        blueman-manager &
-        ;;
-    *"Scan for Nearby Devices"*)
-        notify-send "Bluetooth" "Scanning for devices (10s)..." -i bluetooth
+    *"Scan for Nearby"*)
+        notify-send "Bluetooth" "Scanning for nearby devices (10s)..." -i bluetooth
         bluetoothctl --timeout 10 scan on &
         ;;
-    *"Connect "*)
-        mac=$(echo "$chosen" | grep -o -E '\[[0-9A-Fa-f:]+\]' | tr -d '[]')
-        name=$(echo "$chosen" | sed -E 's/.*Connect (.*) \[.*/\1/')
-        notify-send "Bluetooth" "Connecting to $name..." -i bluetooth
-        if bluetoothctl connect "$mac"; then
-            notify-send "Bluetooth" "Connected to $name" -i bluetooth-active
-        else
-            notify-send "Bluetooth" "Failed to connect to $name" -i dialog-error
+    *"Bluetooth Manager"*)
+        blueman-manager &
+        ;;
+    *"──"*)
+        exit 0
+        ;;
+    *"[ Disconnect ]"*)
+        dev_name="${chosen:3:20}"
+        dev_name="${dev_name%"${dev_name##*[! ]}"}"
+        mac=$(bluetoothctl devices Paired 2>/dev/null | grep -F "$dev_name" | head -n 1 | awk '{print $2}')
+        if [ -n "$mac" ]; then
+            bluetoothctl disconnect "$mac"
+            notify-send "Bluetooth" "Disconnected from $dev_name" -i bluetooth-disabled
         fi
         ;;
-    *"Disconnect "*)
-        mac=$(echo "$chosen" | grep -o -E '\[[0-9A-Fa-f:]+\]' | tr -d '[]')
-        name=$(echo "$chosen" | sed -E 's/.*Disconnect (.*) \[.*/\1/')
-        bluetoothctl disconnect "$mac"
-        notify-send "Bluetooth" "Disconnected from $name" -i bluetooth-disabled
+    *"[ Connect ]"*)
+        dev_name="${chosen:3:20}"
+        dev_name="${dev_name%"${dev_name##*[! ]}"}"
+        mac=$(bluetoothctl devices Paired 2>/dev/null | grep -F "$dev_name" | head -n 1 | awk '{print $2}')
+        if [ -n "$mac" ]; then
+            notify-send "Bluetooth" "Connecting to $dev_name..." -i bluetooth
+            if bluetoothctl connect "$mac"; then
+                notify-send "Bluetooth" "Connected to $dev_name" -i bluetooth-active
+            else
+                notify-send "Bluetooth" "Failed to connect to $dev_name" -i dialog-error
+            fi
+        fi
         ;;
 esac

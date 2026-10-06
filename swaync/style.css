@@ -1,5 +1,5 @@
 /* =============================================================================
- * Everforest macOS Glass Control Center (~/.config/swaync/style.css)
+ * Everforest macOS Glass Notifications & Control Center (~/.config/swaync/style.css)
  * ========================================================================== */
 
 * {
@@ -8,18 +8,139 @@
     font-weight: 500;
 }
 
-/* Control Center Window */
+/* -----------------------------------------------------------------------------
+ * Notification Popup Banners (appear on screen)
+ * -------------------------------------------------------------------------- */
+.notification-row {
+    outline: none;
+    background: transparent;
+}
+
+.notification-row .notification-background {
+    padding: 6px 10px;
+}
+
+.notification-row .notification-background .notification {
+    background-color: rgba(20, 26, 26, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-top: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 18px;
+    padding: 12px 14px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+    color: #d3c6aa;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.notification-row .notification-background .notification:hover {
+    background-color: rgba(26, 34, 34, 0.94);
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.65);
+}
+
+.notification-row .notification-background .notification.low {
+    border-left: 4px solid #859289;
+}
+
+.notification-row .notification-background .notification.normal {
+    border-left: 4px solid #7fbbb3;
+}
+
+.notification-row .notification-background .notification.critical {
+    border-left: 4px solid #e67e80;
+    background-color: rgba(36, 22, 24, 0.92);
+}
+
+.notification-default-action {
+    background: transparent;
+    border: none;
+    border-radius: 16px;
+    padding: 0;
+}
+
+.notification-content {
+    background: transparent;
+    padding: 2px;
+}
+
+.notification-content .image {
+    border-radius: 12px;
+    margin: 4px 10px 4px 2px;
+}
+
+.notification-content .app-icon {
+    margin: 4px 8px 4px 2px;
+}
+
+.summary {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #d3c6aa;
+}
+
+.time {
+    font-size: 11px;
+    color: #859289;
+    margin-right: 24px;
+}
+
+.body {
+    font-size: 12.5px;
+    font-weight: 400;
+    color: #a7b5a9;
+    margin-top: 4px;
+    line-height: 1.35;
+}
+
+.close-button {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 9999px;
+    color: #859289;
+    padding: 2px 6px;
+    margin: 2px;
+    transition: all 0.15s ease;
+}
+
+.close-button:hover {
+    background-color: rgba(230, 126, 128, 0.35);
+    border-color: rgba(230, 126, 128, 0.50);
+    color: #ffffff;
+}
+
+/* Action Buttons */
+.notification-action-buttons {
+    margin-top: 8px;
+    spacing: 6px;
+}
+
+.notification-action-buttons button {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    padding: 6px 14px;
+    color: #d3c6aa;
+    font-weight: 600;
+    font-size: 12px;
+    transition: all 0.15s ease;
+}
+
+.notification-action-buttons button:hover {
+    background-color: #7fbbb3;
+    color: #1e2524;
+}
+
+/* -----------------------------------------------------------------------------
+ * Control Center Panel
+ * -------------------------------------------------------------------------- */
 .control-center {
-    background-color: rgba(20, 26, 26, 0.82);
+    background-color: rgba(20, 26, 26, 0.84);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-top: 1px solid rgba(255, 255, 255, 0.24);
     border-radius: 20px;
     padding: 16px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.60);
     color: #d3c6aa;
 }
 
-/* Title & Clear All */
 .widget-title {
     margin: 4px 6px 12px 6px;
 }
@@ -69,7 +190,7 @@
     background-color: #7fbbb3;
 }
 
-/* Volume and Backlight Sliders */
+/* Sliders */
 .widget-volume,
 .widget-backlight {
     background-color: rgba(255, 255, 255, 0.05);
@@ -128,58 +249,4 @@ scale slider {
 .widget-mpris-subtitle {
     font-size: 12px;
     color: #859289;
-}
-
-/* Notification List & Items */
-.notification-row {
-    outline: none;
-    margin: 6px 0;
-}
-
-.notification {
-    background-color: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    border-radius: 14px;
-    padding: 12px;
-    color: #d3c6aa;
-    transition: all 0.2s ease;
-}
-
-.notification:hover {
-    background-color: rgba(255, 255, 255, 0.10);
-}
-
-.notification-default-action {
-    border-radius: 14px;
-}
-
-.summary {
-    font-size: 13px;
-    font-weight: 600;
-    color: #d3c6aa;
-}
-
-.time {
-    font-size: 11px;
-    color: #859289;
-    margin-right: 6px;
-}
-
-.body {
-    font-size: 12px;
-    color: #9da9a0;
-    margin-top: 4px;
-}
-
-.close-button {
-    background: transparent;
-    border: none;
-    color: #859289;
-    padding: 4px;
-    border-radius: 8px;
-}
-
-.close-button:hover {
-    background-color: rgba(230, 126, 128, 0.25);
-    color: #e67e80;
 }
