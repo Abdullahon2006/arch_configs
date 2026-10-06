@@ -6,6 +6,7 @@ hl.config({
         vrr = 1,
         mouse_move_enables_dpms = true,
         key_press_enables_dpms = true,
-        focus_on_activate = true,
+        -- Apps requesting attention don't steal focus (prevents jumping)
+        focus_on_activate = false,
     },
 })

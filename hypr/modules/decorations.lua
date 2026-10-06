@@ -1,34 +1,45 @@
+-- =============================================================================
+-- Look & feel (~/.config/hypr/modules/decorations.lua)
+-- Everforest dark-slate palette. This is the ONLY place for gaps/borders/blur.
+-- =============================================================================
 hl.config({
     general = {
         gaps_in = 6,
-        gaps_out = 14,
+        gaps_out = 12,
         border_size = 2,
         col = {
             active_border = {
-                colors = { "rgba(89b4faee)", "rgba(cba6f7ee)" },
+                colors = { "rgba(7fbbb3ee)", "rgba(a7c080ee)" },
                 angle = 45,
             },
-            inactive_border = "rgba(313244aa)",
+            inactive_border = "rgba(343f44aa)",
         },
         resize_on_border = true,
         allow_tearing = false,
         layout = "dwindle",
+        -- Floating windows snap to edges / each other (macOS-like)
+        snap = {
+            enabled = true,
+            window_gap = 10,
+            monitor_gap = 12,
+            respect_gaps = true,
+        },
     },
     decoration = {
-        rounding = 16,
-        rounding_power = 4,
-        active_opacity = 0.96,
-        inactive_opacity = 0.88,
+        rounding = 8,
+        rounding_power = 2,
+        active_opacity = 0.97,
+        inactive_opacity = 0.90,
         fullscreen_opacity = 1.0,
         shadow = {
             enabled = true,
-            range = 24,
+            range = 18,
             render_power = 3,
-            color = 0x66000000,
+            color = "rgba(14181877)",
         },
         blur = {
             enabled = true,
-            size = 8,
+            size = 6,
             passes = 3,
             vibrancy = 0.1696,
             new_optimizations = true,
