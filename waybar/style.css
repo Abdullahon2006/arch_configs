@@ -1,0 +1,57 @@
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font", "Inter", sans-serif;
+    font-size: 13px;
+    min-height: 0;
+}
+
+window#waybar {
+    background: rgba(14, 18, 18, 0.88);
+    color: #d3c6aa;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#workspaces button {
+    padding: 2px 10px;
+    color: #707880;
+    border-radius: 10px;
+    margin: 3px 2px;
+    transition: all 0.2s ease;
+}
+
+#workspaces button.active {
+    color: #1e2524;
+    background: #7fbbb3;
+    font-weight: bold;
+}
+
+#workspaces button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #d3c6aa;
+}
+
+#clock, #pulseaudio, #battery, #network, #custom-notification, #custom-power, #custom-spotify {
+    padding: 2px 12px;
+    margin: 3px 4px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #d3c6aa;
+}
+
+#custom-power {
+    color: #e67e80;
+    font-size: 15px;
+    padding: 2px 10px;
+}
+
+#custom-power:hover {
+    background: rgba(230, 126, 128, 0.25);
+    color: #f85552;
+}
+
+#network:hover {
+    background: rgba(127, 187, 179, 0.25);
+    color: #7fbbb3;
+}
