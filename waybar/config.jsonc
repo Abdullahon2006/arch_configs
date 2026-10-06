@@ -10,7 +10,7 @@
     "exclusive": true,
 
     "modules-left":   ["clock", "mpris"],
-    "modules-center": ["hyprland/workspaces"],
+    "modules-center": ["group/workspaces", "custom/ws-listener"],
     "modules-right":  ["group/status", "battery", "custom/notification", "custom/power"],
 
     "clock": {
@@ -38,11 +38,69 @@
         "on-scroll-down": "playerctl previous"
     },
 
-    "hyprland/workspaces": {
-        "format": "{id}",
-        "on-click": "activate",
-        "sort-by-number": true,
-        "all-outputs": true
+    // Workspaces: Lua-compatible buttons (scripts/ws.py). Edit N here + in hypr workspace rules.
+    "group/workspaces": {
+        "orientation": "horizontal",
+        "modules": ["custom/ws1", "custom/ws2", "custom/ws3", "custom/ws4", "custom/ws5", "custom/ws6"]
+    },
+    "custom/ws-listener": {
+        "exec": "~/.config/waybar/scripts/ws.py listen",
+        "format": "",
+        "tooltip": false
+    },
+    "custom/ws1": {
+        "exec": "~/.config/waybar/scripts/ws.py show 1",
+        "return-type": "json",
+        "interval": "once",
+        "signal": 8,
+        "on-click": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"1\" })'",
+        "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"r-1\" })'",
+        "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"r+1\" })'"
+    },
+    "custom/ws2": {
+        "exec": "~/.config/waybar/scripts/ws.py show 2",
+        "return-type": "json",
+        "interval": "once",
+        "signal": 8,
+        "on-click": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"2\" })'",
+        "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"r-1\" })'",
+        "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"r+1\" })'"
+    },
+    "custom/ws3": {
+        "exec": "~/.config/waybar/scripts/ws.py show 3",
+        "return-type": "json",
+        "interval": "once",
+        "signal": 8,
+        "on-click": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"3\" })'",
+        "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"r-1\" })'",
+        "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"r+1\" })'"
+    },
+    "custom/ws4": {
+        "exec": "~/.config/waybar/scripts/ws.py show 4",
+        "return-type": "json",
+        "interval": "once",
+        "signal": 8,
+        "on-click": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"4\" })'",
+        "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"r-1\" })'",
+        "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"r+1\" })'"
+    },
+    "custom/ws5": {
+        "exec": "~/.config/waybar/scripts/ws.py show 5",
+        "return-type": "json",
+        "interval": "once",
+        "signal": 8,
+        "on-click": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"5\" })'",
+        "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"r-1\" })'",
+        "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"r+1\" })'"
+    },
+    "custom/ws6": {
+        "exec": "~/.config/waybar/scripts/ws.py show 6",
+        "return-type": "json",
+        "interval": "once",
+        "signal": 8,
+        "on-click": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"6\" })'",
+        "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"r-1\" })'",
+        "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"r+1\" })'"
     },
 
     // Volume / Wi-Fi / Bluetooth share one rounded group (icons only)
