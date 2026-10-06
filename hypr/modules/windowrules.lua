@@ -57,3 +57,14 @@ for _, ns in ipairs(BLUR_LAYERS) do
         ignore_alpha = 0.1,
     })
 end
+
+-- -----------------------------------------------------------------------------
+-- Workspaces: persistent workspaces 1..6
+-- -----------------------------------------------------------------------------
+for i = 1, 6 do
+    hl.workspace_rule({
+        workspace = tostring(i),
+        persistent = true,
+    })
+end
+

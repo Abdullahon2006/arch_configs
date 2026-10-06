@@ -79,7 +79,9 @@ tooltip label { color: #d3c6aa; padding: 4px 6px; }
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.05);
 }
-#workspaces button {
+#workspaces button,
+#workspaces label,
+#workspaces > * {
     min-width: 24px;
     padding: 0 6px;
     margin: 3px 1px;
@@ -88,6 +90,13 @@ tooltip label { color: #d3c6aa; padding: 4px 6px; }
     background: transparent;
     transition: all 0.15s ease;
 }
-#workspaces button:hover  { background: rgba(255, 255, 255, 0.12); color: #d3c6aa; }
-#workspaces button.active { background: #7fbbb3; color: #1e2524; }
+#workspaces button:hover,
+#workspaces label:hover,
+#workspaces > *:hover  { background: rgba(255, 255, 255, 0.12); color: #d3c6aa; }
+#workspaces .active,
+#workspaces button.active { background: #7fbbb3; color: #1e2524; font-weight: 700; }
+#workspaces .occupied     { color: #d3c6aa; }
+#workspaces .empty        { color: #626e68; }
+#workspaces .urgent,
 #workspaces button.urgent { background: #e67e80; color: #1e2524; }
+

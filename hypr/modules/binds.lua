@@ -48,11 +48,22 @@ hl.bind("SUPER + SHIFT + Right", hl.dsp.window.swap({ direction = "r" }))
 hl.bind("SUPER + SHIFT + Up", hl.dsp.window.swap({ direction = "u" }))
 hl.bind("SUPER + SHIFT + Down", hl.dsp.window.swap({ direction = "d" }))
 
--- Workspaces 1..9 (Native focus dispatcher: moves to workspace 1..9)
+-- Workspaces 1..9, 10 (0)
 for i = 1, 9 do
     hl.bind("SUPER + " .. tostring(i), hl.dsp.focus({ workspace = tostring(i) }))
     hl.bind("SUPER + SHIFT + " .. tostring(i), hl.dsp.window.move({ workspace = tostring(i) }))
 end
+hl.bind("SUPER + 0", hl.dsp.focus({ workspace = "10" }))
+hl.bind("SUPER + SHIFT + 0", hl.dsp.window.move({ workspace = "10" }))
+
+-- Workspace cycling & mouse scroll
+hl.bind("SUPER + bracketleft", hl.dsp.focus({ workspace = "m-1" }))
+hl.bind("SUPER + bracketright", hl.dsp.focus({ workspace = "m+1" }))
+hl.bind("SUPER + CTRL + Left", hl.dsp.focus({ workspace = "m-1" }))
+hl.bind("SUPER + CTRL + Right", hl.dsp.focus({ workspace = "m+1" }))
+hl.bind("SUPER + mouse_down", hl.dsp.focus({ workspace = "m+1" }), { mouse = true })
+hl.bind("SUPER + mouse_up", hl.dsp.focus({ workspace = "m-1" }), { mouse = true })
+
 
 -- Mouse Bindings: Super + Left Click Drag (Move) & Super + Right Click Drag (Resize)
 hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
