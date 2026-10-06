@@ -1,0 +1,67 @@
+/* =============================================================================
+ * Everforest "glass" theme for rofi (~/.config/rofi/theme.rasi)
+ * Window is translucent so Hyprland's layer blur shows through.
+ * All child widgets are transparent; only selection gets a fill.
+ * ========================================================================== */
+
+* {
+    bg:        #14181899;   /* ~60% opacity -> blur visible */
+    bg-alt:    #ffffff0d;
+    border:    #ffffff1a;
+    fg:        #d3c6aa;
+    fg-dim:    #859289;
+    accent:    #7fbbb3;
+    accent-fg: #1e2524;
+    urgent:    #e67e80;
+
+    font: "Inter 12";
+    background-color: transparent;
+    text-color: @fg;
+}
+
+window {
+    width: 560px;
+    location: center;
+    anchor: center;
+    padding: 16px;
+    border: 1px;
+    border-color: @border;
+    border-radius: 14px;
+    background-color: @bg;
+}
+
+mainbox {
+    spacing: 12px;
+    children: [ inputbar, listview ];
+}
+
+inputbar {
+    padding: 10px 14px;
+    border-radius: 10px;
+    background-color: @bg-alt;
+    spacing: 10px;
+    children: [ prompt, entry ];
+}
+
+prompt { text-color: @accent; }
+entry  { placeholder: "Search"; placeholder-color: @fg-dim; }
+
+listview {
+    lines: 8;
+    spacing: 4px;
+    scrollbar: false;
+    fixed-height: false;
+}
+
+element {
+    padding: 10px 14px;
+    border-radius: 10px;
+    spacing: 12px;
+}
+element normal.normal, element alternate.normal { background-color: transparent; text-color: @fg; }
+element selected.normal { background-color: @accent; text-color: @accent-fg; }
+element normal.urgent, element alternate.urgent { text-color: @urgent; }
+element selected.urgent { background-color: @urgent; text-color: @accent-fg; }
+
+element-icon { size: 22px; }
+element-text { vertical-align: 0.5; text-color: inherit; }
