@@ -22,7 +22,7 @@ entry:backdrop {
     font-size: 14px;
     font-weight: 500;
     color: #e6edf3;
-    margin: 28px 740px 24px 740px;
+    margin: 50px 740px 30px 740px;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
