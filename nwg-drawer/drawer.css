@@ -1,89 +1,82 @@
+/* macOS Launchpad aesthetic for nwg-drawer */
 * {
-    font-family: "Inter", "Cantarell", "Roboto", "Noto Sans", "Ubuntu", sans-serif;
+    font-family: "Inter", "JetBrainsMono Nerd Font", sans-serif;
     outline: none;
     border: none;
+    box-shadow: none;
 }
 
 window {
-    background-color: rgba(14, 18, 18, 0.82);
-    color: #e6edf3;
+    background-color: rgba(14, 18, 18, 0.75);
+    color: #d3c6aa;
 }
 
-entry {
-    background-color: rgba(25, 32, 32, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 24px;
-    padding: 10px 24px;
-    font-size: 15px;
+/* Centered, sleek macOS-style search pill */
+entry,
+entry:backdrop {
+    background-color: rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: none;
+    border-radius: 22px;
+    padding: 9px 24px;
+    font-size: 14px;
+    font-weight: 500;
     color: #e6edf3;
-    margin: 20px 260px 14px 260px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
-    transition: all 0.2s ease;
+    margin: 28px 740px 24px 740px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 entry:focus {
-    border: 1px solid rgba(127, 187, 179, 0.6);
-    background-color: rgba(30, 38, 38, 0.95);
-    box-shadow: 0 0 14px rgba(127, 187, 179, 0.3);
-}
-
-#categories {
-    margin-bottom: 10px;
-}
-
-#categories button {
-    background: transparent;
-    border: none;
-    outline: none;
-    box-shadow: none;
-    border-radius: 14px;
-    color: rgba(230, 237, 243, 0.55);
-    padding: 5px 14px;
-    font-size: 12px;
-    font-weight: 500;
-    margin: 0 3px;
-    transition: all 0.15s ease;
-}
-
-#categories button:hover {
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(127, 187, 179, 0.70);
+    box-shadow: 0 0 16px rgba(127, 187, 179, 0.25);
     color: #ffffff;
 }
 
-#categories button:checked,
-#categories button:active {
-    background-color: rgba(127, 187, 179, 0.25);
-    color: #7fbbb3;
-    font-weight: 600;
-}
-
-button {
+/* Clear Adwaita's default button shadows and borders */
+button,
+button:backdrop,
+button:not(:hover):not(:focus) {
     background: transparent;
+    background-color: transparent;
     border: none;
-    outline: none;
+    border-color: transparent;
+    border-width: 0;
     box-shadow: none;
+    text-shadow: none;
+    outline: none;
     border-radius: 18px;
-    padding: 12px 8px;
-    margin: 4px;
-    color: #e6edf3;
-    transition: all 0.18s cubic-bezier(0.165, 0.84, 0.44, 1);
+    padding: 14px 10px;
+    margin: 6px;
+    color: #d3c6aa;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-button:hover,
+button:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.40);
+}
+
 button:focus {
-    background-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    background-color: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
 }
 
 button label {
     color: #d3c6aa;
-    font-size: 12.5px;
+    font-size: 13px;
     font-weight: 500;
-    margin-top: 8px;
+    margin-top: 10px;
+    transition: color 0.15s ease;
+}
+
+button:hover label,
+button:focus label {
+    color: #ffffff;
 }
 
 #pinned-box {
-    padding-bottom: 12px;
-    margin-bottom: 12px;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
