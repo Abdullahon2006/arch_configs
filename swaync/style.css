@@ -14,10 +14,11 @@
 .notification-row {
     outline: none;
     background: transparent;
+    margin: 4px 0px;
 }
 
 .notification-row .notification-background {
-    padding: 6px 10px;
+    padding: 0px;
 }
 
 .notification-row .notification-background .notification {

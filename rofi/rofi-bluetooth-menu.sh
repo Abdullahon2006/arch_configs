@@ -10,7 +10,6 @@ if pgrep -x rofi >/dev/null; then
     exit 0
 fi
 
-# Check if bluetooth is powered on
 power_state=$(bluetoothctl show 2>/dev/null | grep -i "Powered:" | awk '{print $2}')
 
 if [ "$power_state" = "yes" ]; then
@@ -19,7 +18,6 @@ if [ "$power_state" = "yes" ]; then
     settings="⚙  Bluetooth Manager (Blueman)      [ Open GUI ]"
     divider="── Paired Devices ──────────────────────────────"
 
-    # Get paired devices formatted into structured columns
     device_lines=""
     paired_list=$(bluetoothctl devices Paired 2>/dev/null)
     if [ -n "$paired_list" ]; then
@@ -29,7 +27,6 @@ if [ "$power_state" = "yes" ]; then
             name=$(echo "$dev" | cut -d ' ' -f 3-)
             [ -z "$name" ] && name="$mac"
 
-            # Check if connected
             if bluetoothctl info "$mac" 2>/dev/null | grep -q "Connected: yes"; then
                 printf -v line "󰂱  %-20.20s  (Connected)  [ Disconnect ]" "$name"
             else
@@ -54,10 +51,6 @@ line_count=$(echo -e "$menu_content" | wc -l)
 [ "$line_count" -gt 10 ] && line_count=10
 [ "$line_count" -lt 2 ] && line_count=2
 
-menu_height=$(( 80 + line_count * 38 ))
-[ "$menu_height" -gt 460 ] && menu_height=460
-[ "$menu_height" -lt 180 ] && menu_height=180
-
 chosen=$(echo -e "$menu_content" | rofi -dmenu -i -p "Bluetooth" \
     -click-to-exit \
     -theme-str "
@@ -67,38 +60,19 @@ chosen=$(echo -e "$menu_content" | rofi -dmenu -i -p "Bluetooth" \
         text-color: #d3c6aa;
     }
     window {
-        fullscreen: true;
-        background-color: transparent;
-    }
-    mainbox {
-        orientation: horizontal;
-        children: [ dummy-left, right-col ];
-        background-color: transparent;
-    }
-    dummy-left {
-        expand: true;
-        background-color: transparent;
-    }
-    right-col {
-        orientation: vertical;
+        location: northeast;
+        anchor: northeast;
+        x-offset: -12px;
+        y-offset: 46px;
         width: 460px;
-        expand: false;
-        children: [ menubox, dummy-bottom ];
-        background-color: transparent;
-    }
-    dummy-bottom {
-        expand: true;
-        background-color: transparent;
-    }
-    menubox {
-        orientation: vertical;
-        height: ${menu_height}px;
-        margin: 46px 12px 0px 0px;
         background-color: #141a1af2;
         border: 1px;
         border-color: #ffffff24;
         border-radius: 18px;
         padding: 14px;
+    }
+    mainbox {
+        orientation: vertical;
         children: [ inputbar, listview ];
     }
     inputbar {

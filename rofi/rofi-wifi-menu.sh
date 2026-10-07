@@ -42,10 +42,6 @@ line_count=$(echo -e "$menu_content" | wc -l)
 [ "$line_count" -gt 10 ] && line_count=10
 [ "$line_count" -lt 2 ] && line_count=2
 
-menu_height=$(( 80 + line_count * 38 ))
-[ "$menu_height" -gt 460 ] && menu_height=460
-[ "$menu_height" -lt 180 ] && menu_height=180
-
 chosen=$(echo -e "$menu_content" | rofi -dmenu -i -p "Wi-Fi" \
     -click-to-exit \
     -theme-str "
@@ -55,38 +51,19 @@ chosen=$(echo -e "$menu_content" | rofi -dmenu -i -p "Wi-Fi" \
         text-color: #d3c6aa;
     }
     window {
-        fullscreen: true;
-        background-color: transparent;
-    }
-    mainbox {
-        orientation: horizontal;
-        children: [ dummy-left, right-col ];
-        background-color: transparent;
-    }
-    dummy-left {
-        expand: true;
-        background-color: transparent;
-    }
-    right-col {
-        orientation: vertical;
+        location: northeast;
+        anchor: northeast;
+        x-offset: -12px;
+        y-offset: 46px;
         width: 460px;
-        expand: false;
-        children: [ menubox, dummy-bottom ];
-        background-color: transparent;
-    }
-    dummy-bottom {
-        expand: true;
-        background-color: transparent;
-    }
-    menubox {
-        orientation: vertical;
-        height: ${menu_height}px;
-        margin: 46px 12px 0px 0px;
         background-color: #141a1af2;
         border: 1px;
         border-color: #ffffff24;
         border-radius: 18px;
         padding: 14px;
+    }
+    mainbox {
+        orientation: vertical;
         children: [ inputbar, listview ];
     }
     inputbar {
@@ -158,26 +135,18 @@ case "$chosen" in
         nm-connection-editor &
         ;;
     *"──"*)
-        # Separator line clicked, do nothing
         exit 0
         ;;
     *)
-        # Extract SSID from structured line (offset 3, length 20)
         ssid="${chosen:3:20}"
-        # Trim trailing whitespace
         ssid="${ssid%"${ssid##*[! ]}"}"
+        [ -z "$ssid" ] && exit 0
 
-        if [ -z "$ssid" ]; then
-            exit 0
-        fi
-
-        # If already connected
         if echo "$chosen" | grep -q "(Connected)"; then
             notify-send "Wi-Fi" "Already connected to $ssid" -i network-wireless-connected
             exit 0
         fi
 
-        # Check if saved connection exists
         saved=$(nmcli -t -f NAME connection show | grep -F "$ssid" || true)
 
         if [ -n "$saved" ]; then
@@ -188,17 +157,12 @@ case "$chosen" in
                 notify-send "Wi-Fi" "Failed to connect to $ssid" -i dialog-error
             fi
         else
-            # Prompt for password if secured
             if echo "$chosen" | grep -q ""; then
                 pwd=$(rofi -dmenu -password -p "Password for $ssid" -click-to-exit \
                     -theme-str '
                     * { font: "JetBrainsMono Nerd Font 10.5"; background-color: transparent; text-color: #d3c6aa; }
-                    window { fullscreen: true; background-color: transparent; }
-                    mainbox { orientation: horizontal; children: [ dummy-left, right-col ]; }
-                    dummy-left { expand: true; }
-                    right-col { orientation: vertical; width: 380px; expand: false; children: [ menubox, dummy-bottom ]; }
-                    dummy-bottom { expand: true; }
-                    menubox { height: 70px; margin: 46px 12px 0px 0px; background-color: #141a1af2; border: 1px; border-color: #ffffff24; border-radius: 16px; padding: 14px; children: [ inputbar ]; }
+                    window { location: northeast; anchor: northeast; x-offset: -12px; y-offset: 46px; width: 380px; background-color: #141a1af2; border: 1px; border-color: #ffffff24; border-radius: 16px; padding: 14px; }
+                    mainbox { children: [ inputbar ]; }
                     inputbar { padding: 8px 12px; background-color: #ffffff0f; border-radius: 10px; children: [ prompt, entry ]; }
                     prompt { text-color: #7fbbb3; margin: 0 8px 0 0; }
                     entry { text-color: #d3c6aa; }
@@ -211,7 +175,6 @@ case "$chosen" in
                     notify-send "Wi-Fi" "Failed to connect to $ssid" -i dialog-error
                 fi
             else
-                # Open network
                 notify-send "Wi-Fi" "Connecting to $ssid..." -i network-wireless-acquiring
                 if nmcli device wifi connect "$ssid"; then
                     notify-send "Wi-Fi" "Successfully connected to $ssid" -i network-wireless-connected

@@ -36,43 +36,24 @@ chosen=$(echo -e "$options" | rofi -dmenu -i -p "Power Profile" \
         text-color: #d3c6aa;
     }
     window {
-        fullscreen: true;
-        background-color: transparent;
-    }
-    mainbox {
-        orientation: horizontal;
-        children: [ dummy-left, right-col ];
-        background-color: transparent;
-    }
-    dummy-left {
-        expand: true;
-        background-color: transparent;
-    }
-    right-col {
-        orientation: vertical;
+        location: northeast;
+        anchor: northeast;
+        x-offset: -12px;
+        y-offset: 46px;
         width: 320px;
-        expand: false;
-        children: [ menubox, dummy-bottom ];
-        background-color: transparent;
-    }
-    dummy-bottom {
-        expand: true;
-        background-color: transparent;
-    }
-    menubox {
-        orientation: vertical;
-        height: 240px;
-        margin: 46px 12px 0px 0px;
         background-color: #141a1af2;
         border: 1px;
         border-color: #ffffff24;
         border-radius: 18px;
         padding: 14px;
+    }
+    mainbox {
+        orientation: vertical;
         children: [ listview ];
     }
     listview {
         lines: 5;
-        fixed-height: true;
+        fixed-height: false;
         spacing: 4px;
         scrollbar: false;
     }
