@@ -27,14 +27,14 @@
     border-top: 1px solid rgba(255, 255, 255, 0.24);
     border-radius: 18px;
     padding: 12px 14px;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+    box-shadow: none;
     color: #d3c6aa;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .notification-row .notification-background .notification:hover {
     background-color: rgba(26, 34, 34, 0.94);
-    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.65);
+    box-shadow: none;
 }
 
 .notification-row .notification-background .notification.low {
@@ -48,6 +48,13 @@
 .notification-row .notification-background .notification.critical {
     border-left: 4px solid #e67e80;
     background-color: rgba(36, 22, 24, 0.92);
+}
+
+.notification-group.collapsed .notification-row:not(:last-child) .notification {
+    border: none;
+    border-left: none;
+    box-shadow: none;
+    background-color: rgba(20, 26, 26, 0.45);
 }
 
 .notification-default-action {
@@ -132,13 +139,21 @@
 /* -----------------------------------------------------------------------------
  * Control Center Panel
  * -------------------------------------------------------------------------- */
+.blank-window {
+    background: transparent;
+}
+
+.floating-notifications {
+    background: transparent;
+}
+
 .control-center {
     background-color: rgba(20, 26, 26, 0.84);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-top: 1px solid rgba(255, 255, 255, 0.24);
     border-radius: 20px;
     padding: 16px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.60);
+    box-shadow: none;
     color: #d3c6aa;
 }
 

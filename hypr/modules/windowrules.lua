@@ -50,11 +50,12 @@ local BLUR_LAYERS = {
     "swaync-control-center", "swaync-notification-window", "logout_dialog",
 }
 for _, ns in ipairs(BLUR_LAYERS) do
+    local alpha_cutoff = (ns:find("swaync") and 0.5) or 0.2
     hl.layer_rule({
         name = "blur-" .. ns,
         match = { namespace = ns },
         blur = true,
-        ignore_alpha = 0.1,
+        ignore_alpha = alpha_cutoff,
     })
 end
 
