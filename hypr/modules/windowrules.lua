@@ -48,9 +48,10 @@ hl.window_rule({
 local BLUR_LAYERS = {
     "rofi", "waybar", "nwg-drawer", "nwg-dock", "gtk-layer-shell",
     "swaync-control-center", "swaync-notification-window", "logout_dialog",
+    "waybar-popup",
 }
 for _, ns in ipairs(BLUR_LAYERS) do
-    local alpha_cutoff = (ns:find("swaync") and 0.5) or 0.2
+    local alpha_cutoff = (ns:find("swaync") or ns:find("popup")) and 0.5 or 0.2
     hl.layer_rule({
         name = "blur-" .. ns,
         match = { namespace = ns },

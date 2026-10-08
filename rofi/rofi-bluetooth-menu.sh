@@ -1,14 +1,11 @@
 #!/usr/bin/env bash
 # =============================================================================
 # Bluetooth Quick Menu (~/.config/rofi/rofi-bluetooth-menu.sh)
-# Structured layout, on/off toggle card, and click-outside dismissal
+# GTK Layer Shell Menu with outside-click dismissal
 # =============================================================================
 
-# If already open, toggle it closed
-if pgrep -x rofi >/dev/null; then
-    pkill -x rofi
-    exit 0
-fi
+exec python3 ~/.config/waybar/menus/bluetooth.py "$@"
+
 
 power_state=$(bluetoothctl show 2>/dev/null | grep -i "Powered:" | awk '{print $2}')
 

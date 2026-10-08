@@ -1,14 +1,11 @@
 #!/usr/bin/env bash
 # =============================================================================
 # Battery & Power Profile Quick Menu (~/.config/rofi/rofi-battery-menu.sh)
-# Structured layout and click-outside dismissal
+# GTK Layer Shell Menu with outside-click dismissal
 # =============================================================================
 
-# If already open, toggle it closed
-if pgrep -x rofi >/dev/null; then
-    pkill -x rofi
-    exit 0
-fi
+exec python3 ~/.config/waybar/menus/battery.py "$@"
+
 
 current_profile=$(powerprofilesctl get 2>/dev/null || echo "balanced")
 cap=$(cat /sys/class/power_supply/BAT*/capacity 2>/dev/null | head -1 || echo "100")

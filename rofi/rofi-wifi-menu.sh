@@ -1,14 +1,11 @@
 #!/usr/bin/env bash
 # =============================================================================
 # Wi-Fi Quick Menu (~/.config/rofi/rofi-wifi-menu.sh)
-# Structured layout, on/off toggle card, and click-outside dismissal
+# GTK Layer Shell Menu with outside-click dismissal
 # =============================================================================
 
-# If already open, toggle it closed
-if pgrep -x rofi >/dev/null; then
-    pkill -x rofi
-    exit 0
-fi
+exec python3 ~/.config/waybar/menus/wifi.py "$@"
+
 
 wifi_status=$(nmcli -fields WIFI g 2>/dev/null | tail -n 1 | tr -d ' ')
 

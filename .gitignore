@@ -10,3 +10,7 @@
 !/hypridle/
 !/zsh/
 !/theme/
+
+# Python cache
+**/__pycache__/
+*.py[cod]
