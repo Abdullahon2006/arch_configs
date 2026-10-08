@@ -58,6 +58,7 @@ if hl.plugin and hl.plugin.hyprbars then
     local CSD_APPS = {
         "org\\.gnome\\..*", "nautilus", "firefox", "chromium", "google-chrome",
         "Code", "code-oss", "antigravity", "Antigravity", "blueman-manager",
+        "onboard",
     }
     hl.window_rule({
         name = "hyprbars-skip-csd",

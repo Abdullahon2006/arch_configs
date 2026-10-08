@@ -11,7 +11,7 @@
 
     "modules-left":   ["clock", "mpris"],
     "modules-center": ["group/workspaces", "custom/ws-listener"],
-    "modules-right":  ["group/status", "battery", "custom/notification", "custom/power"],
+    "modules-right":  ["group/status", "custom/keyboard", "battery", "custom/notification", "custom/power"],
 
     "clock": {
         "format": "{:%a %d %b  ·  %H:%M}",
@@ -115,9 +115,9 @@
         "format-muted": "󰖁",
         "format-icons": { "default": ["󰕿", "󰖀", "󰕾"], "headphone": "󰋋" },
         "tooltip-format": "Volume {volume}%  ·  {desc}",
-        "on-click": "pkill -x pavucontrol || pavucontrol",
+        "on-click": "python3 ~/.config/waybar/menus/volume.py",
         "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
-        "on-click-middle": "swaync-client -t -sw",
+        "on-click-middle": "pavucontrol",
         "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+",
         "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
     },
@@ -178,5 +178,12 @@
         "format": "⏻",
         "tooltip": false,
         "on-click": "bash ~/.config/rofi/powermenu.sh"
+    },
+
+    "custom/keyboard": {
+        "format": "󰌌",
+        "tooltip-format": "Virtual Keyboard (Onboard)\nLeft-click: Toggle\nRight-click: Settings",
+        "on-click": "bash ~/.config/waybar/scripts/toggle-keyboard.sh",
+        "on-click-right": "onboard-settings"
     }
 }

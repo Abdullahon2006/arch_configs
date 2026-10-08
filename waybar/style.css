@@ -26,7 +26,7 @@ tooltip {
 tooltip label { color: #d3c6aa; padding: 4px 6px; }
 
 /* Shared look for every module: soft inner chip, highlight on hover */
-#clock, #mpris, #status, #battery, #custom-notification, #custom-power {
+#clock, #mpris, #status, #battery, #custom-keyboard, #custom-notification, #custom-power {
     margin: 4px 3px;
     padding: 0 12px;
     border-radius: 8px;
@@ -36,7 +36,7 @@ tooltip label { color: #d3c6aa; padding: 4px 6px; }
 }
 
 #clock:hover, #mpris:hover, #battery:hover,
-#custom-notification:hover, #custom-power:hover {
+#custom-keyboard:hover, #custom-notification:hover, #custom-power:hover {
     background: rgba(255, 255, 255, 0.12);
 }
 
@@ -62,7 +62,7 @@ tooltip label { color: #d3c6aa; padding: 4px 6px; }
 #battery.warning:not(.charging)           { color: #dbbc7f; }
 #battery.critical:not(.charging)          { color: #e67e80; }
 
-#custom-notification { font-size: 15px; font-weight: 400; padding: 0 10px; }
+#custom-keyboard, #custom-notification { font-size: 15px; font-weight: 400; padding: 0 10px; }
 
 #custom-power {
     margin-right: 4px;

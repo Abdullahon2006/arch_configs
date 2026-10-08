@@ -108,6 +108,33 @@ scrollbar slider {
 scrollbar slider:hover {
     background-color: rgba(127, 187, 179, 0.5);
 }
+
+scale trough {
+    background-color: rgba(255, 255, 255, 0.10);
+    border-radius: 6px;
+    min-height: 8px;
+    margin: 4px 0px;
+}
+
+scale highlight {
+    background-color: #7fbbb3;
+    border-radius: 6px;
+    min-height: 8px;
+}
+
+scale slider {
+    background-color: #d3c6aa;
+    border-radius: 10px;
+    min-width: 14px;
+    min-height: 14px;
+    margin: -3px 0px;
+    box-shadow: none;
+    border: none;
+}
+
+scale slider:hover {
+    background-color: #ffffff;
+}
 """
 
 def handle_singleton(name):
