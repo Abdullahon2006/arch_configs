@@ -34,5 +34,9 @@ def switch_to_user(target_user):
     return True
 
 if __name__ == "__main__":
-    target = sys.argv[1] if len(sys.argv) > 1 else "david"
+    if len(sys.argv) > 1:
+        target = sys.argv[1]
+    else:
+        current_user = os.environ.get("USER") or "david"
+        target = "simple" if current_user == "david" else "david"
     switch_to_user(target)

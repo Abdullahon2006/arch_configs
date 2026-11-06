@@ -1,10 +1,22 @@
-local home = os.getenv("HOME") or "/home/david"
+local home = os.getenv("HOME") or ""
 local wallpaper = home .. "/Pictures/wallpaper.jpg"
 local f = io.open(wallpaper, "r")
 if f then
     f:close()
 else
-    wallpaper = "/home/david/Pictures/wallpaper.jpg"
+    local candidates = {
+        "/home/simple/sharedDavid/wallpapers/cyan_teal/d3ext_everforest_robin.png",
+        "/home/simple/Pictures/wallpaper.jpg",
+        "/home/david/Pictures/wallpaper.jpg"
+    }
+    for _, path in ipairs(candidates) do
+        local test_f = io.open(path, "r")
+        if test_f then
+            test_f:close()
+            wallpaper = path
+            break
+        end
+    end
 end
 
 hl.on("hyprland.start", function()

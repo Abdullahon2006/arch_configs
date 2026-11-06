@@ -2,6 +2,9 @@
 -- Keybindings (~/.config/hypr/modules/binds.lua)
 -- =============================================================================
 
+local home = os.getenv("HOME")
+local scripts = home .. "/.config/hypr/scripts"
+
 -- Applications
 hl.bind("SUPER + Return", hl.dsp.exec_cmd("kitty"))
 hl.bind("CTRL + ALT + T", hl.dsp.exec_cmd("kitty"))
@@ -13,7 +16,7 @@ hl.bind("CTRL + SHIFT + Escape", hl.dsp.exec_cmd("kitty -e htop"))
 hl.bind("SUPER + Escape", hl.dsp.exec_cmd("bash ~/.config/rofi/powermenu.sh"))
 
 -- Lock Screen (Super + L)
-hl.bind("SUPER + L", hl.dsp.exec_cmd("bash /home/simple/.config/hypr/scripts/launch_lock.sh"))
+hl.bind("SUPER + L", hl.dsp.exec_cmd("bash " .. scripts .. "/launch_lock.sh"))
 -- Switch User to SDDM Greeter (works even when screen is locked)
 hl.bind("CTRL + ALT + S", hl.dsp.exec_cmd("busctl call org.freedesktop.DisplayManager /org/freedesktop/DisplayManager/Seat0 org.freedesktop.DisplayManager.Seat SwitchToGreeter"), { locked = true })
 hl.bind("CTRL + ALT + Delete", hl.dsp.exec_cmd("busctl call org.freedesktop.DisplayManager /org/freedesktop/DisplayManager/Seat0 org.freedesktop.DisplayManager.Seat SwitchToGreeter"), { locked = true })
@@ -22,8 +25,8 @@ hl.bind("CTRL + ALT + Delete", hl.dsp.exec_cmd("busctl call org.freedesktop.Disp
 -- Window Management (Closing, Fullscreen, Floating)
 hl.bind("SUPER + Q", hl.dsp.window.close({}))
 hl.bind("ALT + F4", hl.dsp.window.close({}))
-hl.bind("SUPER + F", hl.dsp.exec_cmd("python3 /home/simple/.config/hypr/scripts/toggle_fullscreen_space.py"))
-hl.bind("F11", hl.dsp.exec_cmd("python3 /home/simple/.config/hypr/scripts/toggle_fullscreen_space.py"))
+hl.bind("SUPER + F", hl.dsp.exec_cmd("python3 " .. scripts .. "/toggle_fullscreen_space.py"))
+hl.bind("F11", hl.dsp.exec_cmd("python3 " .. scripts .. "/toggle_fullscreen_space.py"))
 hl.bind("SUPER + V", hl.dsp.window.float({ action = "toggle" }))
 
 -- Alt + Tab & Super + Tab (Window Cycling + Bring to Top)
@@ -37,17 +40,17 @@ hl.bind("SUPER + SHIFT + Tab", hl.dsp.window.cycle_next({ next = false }))
 hl.bind("SUPER + SHIFT + Tab", hl.dsp.window.bring_to_top())
 
 -- Window Minimization / Hiding (scratchpad special workspace with bidirectional restore)
-hl.bind("SUPER + M", hl.dsp.exec_cmd("python3 /home/simple/.config/hypr/scripts/toggle_scratchpad.py toggle"))
-hl.bind("SUPER + H", hl.dsp.exec_cmd("python3 /home/simple/.config/hypr/scripts/toggle_scratchpad.py toggle"))
-hl.bind("SUPER + SHIFT + M", hl.dsp.exec_cmd("python3 /home/simple/.config/hypr/scripts/toggle_scratchpad.py overlay"))
+hl.bind("SUPER + M", hl.dsp.exec_cmd("python3 " .. scripts .. "/toggle_scratchpad.py toggle"))
+hl.bind("SUPER + H", hl.dsp.exec_cmd("python3 " .. scripts .. "/toggle_scratchpad.py toggle"))
+hl.bind("SUPER + SHIFT + M", hl.dsp.exec_cmd("python3 " .. scripts .. "/toggle_scratchpad.py overlay"))
 
 -- Screenshots
 hl.bind("Print", hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | wl-copy && notify-send 'Screenshot' 'Copied to clipboard'"))
 hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | wl-copy && notify-send 'Screenshot' 'Copied to clipboard'"))
 
 -- Mission Control / Spaces Overview (macOS style)
-hl.bind("F3", hl.dsp.exec_cmd("python3 /home/simple/.config/hypr/scripts/mission_control.py"))
-hl.bind("SUPER + Up", hl.dsp.exec_cmd("python3 /home/simple/.config/hypr/scripts/mission_control.py"))
+hl.bind("F3", hl.dsp.exec_cmd("python3 " .. scripts .. "/mission_control.py"))
+hl.bind("SUPER + Up", hl.dsp.exec_cmd("python3 " .. scripts .. "/mission_control.py"))
 
 -- Move Focus with Arrow Keys
 hl.bind("SUPER + Left", hl.dsp.focus({ direction = "l" }))

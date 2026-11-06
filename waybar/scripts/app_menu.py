@@ -331,8 +331,9 @@ class AppContextMenu(Gtk.Window):
         env = os.environ.copy()
         if sig:
             env["HYPRLAND_INSTANCE_SIGNATURE"] = sig
+        scripts_dir = os.path.expanduser("~/.config/hypr/scripts")
         if str(ws_name).startswith("special:"):
-            subprocess.Popen(f"python3 /home/simple/.config/hypr/scripts/toggle_scratchpad.py restore '{address}'", shell=True, env=env)
+            subprocess.Popen(f"python3 {os.path.join(scripts_dir, 'toggle_scratchpad.py')} restore '{address}'", shell=True, env=env)
         elif ws_name:
             target = f"name:{ws_name}" if str(ws_name).startswith("space:") else str(ws_name)
             subprocess.Popen(f"hyprctl dispatch 'hl.dsp.focus({{ workspace = \"{target}\" }})'; hyprctl dispatch 'hl.dsp.focus({{ window = \"address:{address}\" }})'", shell=True, env=env)
@@ -353,7 +354,8 @@ class AppContextMenu(Gtk.Window):
         if sig:
             env["HYPRLAND_INSTANCE_SIGNATURE"] = sig
         arg = f"'{self.target_addr}'" if self.target_addr else ""
-        subprocess.Popen(f"python3 /home/simple/.config/hypr/scripts/toggle_fullscreen_space.py {arg}", shell=True, env=env)
+        scripts_dir = os.path.expanduser("~/.config/hypr/scripts")
+        subprocess.Popen(f"python3 {os.path.join(scripts_dir, 'toggle_fullscreen_space.py')} {arg}", shell=True, env=env)
 
     def action_minimize(self):
         sig = get_signature()
@@ -361,7 +363,8 @@ class AppContextMenu(Gtk.Window):
         if sig:
             env["HYPRLAND_INSTANCE_SIGNATURE"] = sig
         arg = f"'{self.target_addr}'" if self.target_addr else ""
-        subprocess.Popen(f"python3 /home/simple/.config/hypr/scripts/toggle_scratchpad.py minimize {arg}", shell=True, env=env)
+        scripts_dir = os.path.expanduser("~/.config/hypr/scripts")
+        subprocess.Popen(f"python3 {os.path.join(scripts_dir, 'toggle_scratchpad.py')} minimize {arg}", shell=True, env=env)
 
     def action_restore(self):
         sig = get_signature()
@@ -369,7 +372,8 @@ class AppContextMenu(Gtk.Window):
         if sig:
             env["HYPRLAND_INSTANCE_SIGNATURE"] = sig
         arg = f"'{self.target_addr}'" if self.target_addr else ""
-        subprocess.Popen(f"python3 /home/simple/.config/hypr/scripts/toggle_scratchpad.py restore {arg}", shell=True, env=env)
+        scripts_dir = os.path.expanduser("~/.config/hypr/scripts")
+        subprocess.Popen(f"python3 {os.path.join(scripts_dir, 'toggle_scratchpad.py')} restore {arg}", shell=True, env=env)
 
     def action_close(self):
         if self.target_addr:
