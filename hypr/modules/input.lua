@@ -29,3 +29,13 @@ hl.gesture({
     direction = "horizontal",
     action = "workspace",
 })
+
+hl.gesture({
+    fingers = 3,
+    direction = "up",
+    action = {
+        finish = function()
+            hl.exec_cmd("python3 /home/simple/.config/hypr/scripts/mission_control.py")
+        end,
+    },
+})
