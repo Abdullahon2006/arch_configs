@@ -11,10 +11,11 @@ opt_power="󰐥  Power Off"
 opt_reboot="󰜉  Restart"
 opt_suspend="󰤄  Suspend"
 opt_hibernate="󰒲  Hibernate"
+opt_switch="👥  Switch User"
 opt_lock="󰌾  Lock Screen"
 opt_logout="󰍃  Log Out"
 
-options="$opt_power\n$opt_reboot\n$opt_suspend\n$opt_hibernate\n$opt_lock\n$opt_logout"
+options="$opt_power\n$opt_reboot\n$opt_suspend\n$opt_hibernate\n$opt_lock\n$opt_switch\n$opt_logout"
 
 chosen=$(echo -e "$options" | rofi -dmenu -i -p "Power" \
     -click-to-exit \
@@ -41,7 +42,7 @@ chosen=$(echo -e "$options" | rofi -dmenu -i -p "Power" \
         children: [ listview ];
     }
     listview {
-        lines: 6;
+        lines: 7;
         fixed-height: false;
         spacing: 4px;
         scrollbar: false;
@@ -76,5 +77,6 @@ case "$chosen" in
     *"Suspend") systemctl suspend ;;
     *"Hibernate") systemctl hibernate ;;
     *"Lock Screen") hyprlock ;;
+    *"Switch User") busctl call org.freedesktop.DisplayManager /org/freedesktop/DisplayManager/Seat0 org.freedesktop.DisplayManager.Seat SwitchToGreeter ;;
     *"Log Out") hyprctl dispatch 'hl.dsp.exit()' ;;
 esac

@@ -1,0 +1,9 @@
+/* Typography and Spacing for GTK3 */
+window, dialog {
+    letter-spacing: 0.12px;
+}
+
+list row {
+    min-height: 36px;
+    padding: 6px 8px;
+}

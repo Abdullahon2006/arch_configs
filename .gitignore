@@ -11,6 +11,9 @@
 !/hypridle/
 !/zsh/
 !/theme/
+!/gtk-3.0/
+!/gtk-4.0/
+!/fontconfig/
 
 # Python cache
 **/__pycache__/
