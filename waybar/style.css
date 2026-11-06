@@ -10,13 +10,42 @@
     box-shadow: none;
 }
 
-/* The bar itself: one translucent rounded pill (blurred by Hyprland) */
+/* The bar itself: full-width menu bar flush with screen top */
 window#waybar {
-    background: rgba(20, 24, 24, 0.60);
+    background: rgba(20, 24, 24, 0.78);
     color: #d3c6aa;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 0px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: none;
+    border-left: none;
+    border-right: none;
 }
+
+/* Application Taskbar on top bar (zero empty box when no apps) */
+#taskbar {
+    margin: 0 2px;
+    padding: 0;
+    background: transparent;
+    border: none;
+}
+
+#taskbar button {
+    padding: 0 6px;
+    margin: 2px 2px;
+    border-radius: 6px;
+    background: transparent;
+    transition: all 0.15s ease;
+}
+
+#taskbar button:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+#taskbar button.active {
+    background: rgba(127, 187, 179, 0.22);
+    border-bottom: 2px solid #7fbbb3;
+}
+
 
 tooltip {
     background: rgba(20, 24, 24, 0.94);

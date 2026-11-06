@@ -3,15 +3,31 @@
     "layer": "top",
     "position": "top",
     "height": 34,
-    "margin-top": 6,
-    "margin-left": 10,
-    "margin-right": 10,
+    "margin-top": 0,
+    "margin-left": 0,
+    "margin-right": 0,
     "spacing": 0,
     "exclusive": true,
 
-    "modules-left":   ["clock", "mpris"],
+    "modules-left":   ["clock", "wlr/taskbar", "mpris"],
     "modules-center": ["group/workspaces", "custom/ws-listener"],
     "modules-right":  ["group/status", "custom/keyboard", "battery", "custom/notification", "custom/power"],
+
+    
+    "wlr/taskbar": {
+        "format": "{icon}",
+        "icon-size": 18,
+        "spacing": 4,
+        "tooltip-format": "{title}",
+        "on-click": "activate",
+        "on-click-middle": "close",
+        "on-click-right": "bash ~/.config/waybar/scripts/app_menu.sh",
+        "ignore-list": [
+            "rofi",
+            "nwg-drawer",
+            "nwg-dock-hyprland"
+        ]
+    },
 
     "clock": {
         "format": "{:%a %d %b  ·  %H:%M}",
