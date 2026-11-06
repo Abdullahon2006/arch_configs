@@ -23,6 +23,7 @@ hl.bind("CTRL + ALT + Delete", hl.dsp.exec_cmd("busctl call org.freedesktop.Disp
 hl.bind("SUPER + Q", hl.dsp.window.close({}))
 hl.bind("ALT + F4", hl.dsp.window.close({}))
 hl.bind("SUPER + F", hl.dsp.exec_cmd("python3 /home/simple/.config/hypr/scripts/toggle_fullscreen_space.py"))
+hl.bind("CTRL + F", hl.dsp.exec_cmd("python3 /home/simple/.config/hypr/scripts/toggle_fullscreen_space.py"))
 hl.bind("F11", hl.dsp.exec_cmd("python3 /home/simple/.config/hypr/scripts/toggle_fullscreen_space.py"))
 hl.bind("SUPER + V", hl.dsp.window.float({ action = "toggle" }))
 
