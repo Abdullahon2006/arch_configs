@@ -13,7 +13,7 @@ hl.bind("CTRL + SHIFT + Escape", hl.dsp.exec_cmd("kitty -e htop"))
 hl.bind("SUPER + Escape", hl.dsp.exec_cmd("bash ~/.config/rofi/powermenu.sh"))
 
 -- Lock Screen (Super + L)
-hl.bind("SUPER + L", hl.dsp.exec_cmd("faillock --reset 2>/dev/null; hyprlock"))
+hl.bind("SUPER + L", hl.dsp.exec_cmd("bash /home/simple/.config/hypr/scripts/launch_lock.sh"))
 -- Switch User to SDDM Greeter (works even when screen is locked)
 hl.bind("CTRL + ALT + S", hl.dsp.exec_cmd("busctl call org.freedesktop.DisplayManager /org/freedesktop/DisplayManager/Seat0 org.freedesktop.DisplayManager.Seat SwitchToGreeter"), { locked = true })
 hl.bind("CTRL + ALT + Delete", hl.dsp.exec_cmd("busctl call org.freedesktop.DisplayManager /org/freedesktop/DisplayManager/Seat0 org.freedesktop.DisplayManager.Seat SwitchToGreeter"), { locked = true })
