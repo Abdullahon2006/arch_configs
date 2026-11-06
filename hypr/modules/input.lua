@@ -34,10 +34,11 @@ hl.gesture({
     action = "workspace",
 })
 
+local home = os.getenv("HOME")
 hl.gesture({
     fingers = 3,
     direction = "up",
     action = function()
-        hl.exec_cmd("python3 /home/simple/.config/hypr/scripts/mission_control.py")
+        hl.exec_cmd("python3 " .. home .. "/.config/hypr/scripts/mission_control.py")
     end,
 })

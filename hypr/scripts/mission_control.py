@@ -322,7 +322,8 @@ class MissionControl(Gtk.Window):
                 env["HYPRLAND_INSTANCE_SIGNATURE"] = sig
             if str(ws_name).startswith("special:"):
                 # Restore window from scratchpad
-                subprocess.Popen(f"python3 /home/simple/.config/hypr/scripts/toggle_scratchpad.py restore '{address}'", shell=True, env=env)
+                script = os.path.expanduser("~/.config/hypr/scripts/toggle_scratchpad.py")
+                subprocess.Popen(f"python3 {script} restore '{address}'", shell=True, env=env)
             else:
                 target = f"name:{ws_name}" if str(ws_name).startswith("space:") else str(ws_name)
                 subprocess.Popen(f"hyprctl dispatch 'hl.dsp.focus({{ workspace = \"{target}\" }})'; hyprctl dispatch 'hl.dsp.focus({{ window = \"address:{address}\" }})'", shell=True, env=env)
