@@ -8,14 +8,15 @@ hl.bind("CTRL + ALT + T", hl.dsp.exec_cmd("kitty"))
 hl.bind("SUPER + E", hl.dsp.exec_cmd("nautilus --new-window"))
 hl.bind("SUPER + Space", hl.dsp.exec_cmd("nwg-drawer"))
 hl.bind("SUPER + D", hl.dsp.exec_cmd("nwg-drawer"))
-hl.bind("SUPER + I", hl.dsp.exec_cmd("python3 /home/simple/.config/waybar/menus/settings.py"))
+hl.bind("SUPER + I", hl.dsp.exec_cmd("XDG_CURRENT_DESKTOP=GNOME gnome-control-center"))
 hl.bind("CTRL + SHIFT + Escape", hl.dsp.exec_cmd("kitty -e htop"))
 hl.bind("SUPER + Escape", hl.dsp.exec_cmd("bash ~/.config/rofi/powermenu.sh"))
 
 -- Lock Screen (Super + L)
 hl.bind("SUPER + L", hl.dsp.exec_cmd("hyprlock"))
 -- Switch User to SDDM Greeter (works even when screen is locked)
-hl.bind("CTRL + ALT + S", hl.dsp.exec_cmd("qdbus org.freedesktop.DisplayManager /org/freedesktop/DisplayManager/Seat0 org.freedesktop.DisplayManager.Seat.SwitchToGreeter || loginctl activate 6 || true"), { locked = true })
+hl.bind("CTRL + ALT + S", hl.dsp.exec_cmd("busctl call org.freedesktop.DisplayManager /org/freedesktop/DisplayManager/Seat0 org.freedesktop.DisplayManager.Seat SwitchToGreeter"), { locked = true })
+hl.bind("CTRL + ALT + Delete", hl.dsp.exec_cmd("busctl call org.freedesktop.DisplayManager /org/freedesktop/DisplayManager/Seat0 org.freedesktop.DisplayManager.Seat SwitchToGreeter"), { locked = true })
 
 
 -- Window Management (Closing, Fullscreen, Floating)
