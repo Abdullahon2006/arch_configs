@@ -102,49 +102,56 @@ def main():
     is_fullscreen = target_win.get("fullscreen", 0)
 
     spaces = load_json(STATE_FILE, {})
-    settings = load_json(SETTINGS_FILE, {"fullscreen_bar": "visible"})
-    fs_mode = "maximized" if settings.get("fullscreen_bar", "visible") == "visible" else "fullscreen"
+    settings = load_json(SETTINGS_FILE, {"fullscreen_mode": "native"})
+    # Settings support: "native" (fullscreen in-place) or "space" (dedicated macOS-style space)
+    use_dedicated_spaces = settings.get("fullscreen_mode", "native") == "space"
 
-    # Focus target window first
+    # Always focus target window first
     dispatch_lua(f'hl.dsp.focus({{ window = "address:{address}" }})')
 
-    # Check if already in a dedicated space or fullscreened
+    # Case 1: Window is in a dedicated Space -> Return it to original workspace
     if curr_ws_name.startswith("space:") or address in spaces:
         space_info = spaces.get(address, {})
         orig_ws = str(space_info.get("orig_ws", 1))
 
-        # 1. Unset fullscreen / maximized mode
+        # Unset fullscreen / maximized mode
         unfullscreen_active()
 
-        # 2. Move window back to original workspace
+        # Move window back to original workspace
         dispatch_lua(f'hl.dsp.window.move({{ workspace = "{orig_ws}" }})')
 
-        # 3. Switch back to original workspace and focus window
+        # Switch back to original workspace and focus window
         dispatch_lua(f'hl.dsp.focus({{ workspace = "{orig_ws}" }})')
         dispatch_lua(f'hl.dsp.focus({{ window = "address:{address}" }})')
 
         if address in spaces:
             del spaces[address]
             save_json(STATE_FILE, spaces)
+
+    # Case 2: Window is already fullscreen in place -> Exit fullscreen
     elif is_fullscreen != 0:
-        # Standard fullscreen toggle exit
         unfullscreen_active()
+
+    # Case 3: Window is normal -> Fullscreen it!
     else:
-        # Enter new dedicated Space
-        suffix = address[-4:] if len(address) >= 4 else "00"
-        space_name = f"space:{win_class}-{suffix}"
+        if use_dedicated_spaces:
+            # Dedicated macOS Space
+            suffix = address[-4:] if len(address) >= 4 else "00"
+            space_name = f"space:{win_class}-{suffix}"
 
-        spaces[address] = {
-            "orig_ws": curr_ws_id,
-            "space_name": space_name
-        }
-        save_json(STATE_FILE, spaces)
+            spaces[address] = {
+                "orig_ws": curr_ws_id,
+                "space_name": space_name
+            }
+            save_json(STATE_FILE, spaces)
 
-        # Move to space and switch to it
-        dispatch_lua(f'hl.dsp.window.move({{ workspace = "name:{space_name}" }})')
-        dispatch_lua(f'hl.dsp.focus({{ workspace = "name:{space_name}" }})')
-        dispatch_lua(f'hl.dsp.focus({{ window = "address:{address}" }})')
-        dispatch_lua(f'hl.dsp.window.fullscreen({{ mode = "{fs_mode}" }})')
+            dispatch_lua(f'hl.dsp.window.move({{ workspace = "name:{space_name}" }})')
+            dispatch_lua(f'hl.dsp.focus({{ workspace = "name:{space_name}" }})')
+            dispatch_lua(f'hl.dsp.focus({{ window = "address:{address}" }})')
+            dispatch_lua('hl.dsp.window.fullscreen({ mode = "maximized" })')
+        else:
+            # Native Hyprland fullscreen in-place (instant, toggle back and forth)
+            dispatch_lua('hl.dsp.window.fullscreen()')
 
 if __name__ == "__main__":
     main()
