@@ -48,8 +48,6 @@ window {
 .section-label {
     color: #859289;
     font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
     padding: 4px 10px 2px 10px;
 }
 
