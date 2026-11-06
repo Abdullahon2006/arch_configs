@@ -228,14 +228,14 @@ class MissionControl(Gtk.Window):
         def handler(w):
             self.close()
             target = f"name:{ws_name}" if str(ws_name).startswith("space:") else str(ws_id)
-            subprocess.Popen(f"hyprctl dispatch workspace {target}", shell=True)
+            subprocess.Popen(f"hyprctl dispatch 'hl.dsp.focus({{ workspace = \"{target}\" }})'", shell=True)
             Gtk.main_quit()
         return handler
 
     def make_focus_win(self, address, ws_name):
         def handler(w):
             self.close()
-            subprocess.Popen(f"hyprctl dispatch focuswindow address:{address}", shell=True)
+            subprocess.Popen(f"hyprctl dispatch 'hl.dsp.focus({{ window = \"address:{address}\" }})'", shell=True)
             Gtk.main_quit()
         return handler
 
