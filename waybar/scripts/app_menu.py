@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 import sys
+import signal
 import gi
 
 gi.require_version('Gtk', '3.0')
@@ -21,10 +22,11 @@ window {
 
 .context-menu-card {
     background-color: rgba(20, 26, 26, 0.96);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-top: 1px solid rgba(255, 255, 255, 0.28);
     border-radius: 14px;
     padding: 8px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
 }
 
 .app-title-box {
@@ -77,6 +79,28 @@ window {
 }
 """
 
+PID_FILE = "/tmp/waybar_app_menu.pid"
+
+def handle_singleton():
+    if os.path.exists(PID_FILE):
+        try:
+            with open(PID_FILE, "r") as f:
+                old_pid = int(f.read().strip())
+            os.kill(old_pid, signal.SIGTERM)
+            os.remove(PID_FILE)
+            sys.exit(0)
+        except Exception:
+            pass
+    with open(PID_FILE, "w") as f:
+        f.write(str(os.getpid()))
+
+def cleanup_pid():
+    if os.path.exists(PID_FILE):
+        try:
+            os.remove(PID_FILE)
+        except Exception:
+            pass
+
 def get_signature():
     sig = os.environ.get("HYPRLAND_INSTANCE_SIGNATURE", "")
     if sig:
@@ -122,7 +146,6 @@ def get_all_clients():
         return []
     try:
         clients = json.loads(out)
-        # Filter to mapped / valid clients
         return [c for c in clients if c.get("mapped", True) and not c.get("hidden", False)]
     except Exception:
         return []
@@ -130,48 +153,56 @@ def get_all_clients():
 def resolve_target_window(clients, cursor_x):
     if not clients:
         return None
-
-    # If only 1 client exists, it is unambiguously that one
     if len(clients) == 1:
         return clients[0]
-
-    # In Waybar: Clock is ~0..180px.
-    # Taskbar starts around 180px. Each button is ~38px.
-    # If clicked on taskbar area:
     if cursor_x >= 150:
         task_idx = int((cursor_x - 170) / 38)
         task_idx = max(0, min(task_idx, len(clients) - 1))
         return clients[task_idx]
-
-    # Fallback: most recently focused window
     sorted_by_focus = sorted(clients, key=lambda c: c.get("focusHistoryID", 999))
     return sorted_by_focus[0]
 
 class AppContextMenu(Gtk.Window):
     def __init__(self):
         super().__init__()
+        handle_singleton()
+
         self.set_name("app-context-menu")
 
         GtkLayerShell.init_for_window(self)
         GtkLayerShell.set_layer(self, GtkLayerShell.Layer.OVERLAY)
+        GtkLayerShell.set_namespace(self, "waybar-app-menu")
+        GtkLayerShell.set_exclusive_zone(self, -1)
         GtkLayerShell.set_keyboard_mode(self, GtkLayerShell.KeyboardMode.ON_DEMAND)
 
-        cursor_x, cursor_y = get_cursor_pos()
-        margin_left = max(10, min(cursor_x - 30, 1620))
+        for edge in [GtkLayerShell.Edge.LEFT, GtkLayerShell.Edge.RIGHT, GtkLayerShell.Edge.TOP, GtkLayerShell.Edge.BOTTOM]:
+            GtkLayerShell.set_anchor(self, edge, True)
 
-        GtkLayerShell.set_anchor(self, GtkLayerShell.Edge.TOP, True)
-        GtkLayerShell.set_anchor(self, GtkLayerShell.Edge.LEFT, True)
-        GtkLayerShell.set_margin(self, GtkLayerShell.Edge.TOP, 38)
-        GtkLayerShell.set_margin(self, GtkLayerShell.Edge.LEFT, margin_left)
+        self.set_app_paintable(True)
+        visual = self.get_screen().get_rgba_visual()
+        if visual:
+            self.set_visual(visual)
+
+        self.connect("draw", self.on_draw)
+
+        cursor_x, cursor_y = get_cursor_pos()
+        card_margin_left = max(10, min(cursor_x - 30, 1620))
 
         self.apply_css()
 
-        self.connect("focus-out-event", lambda w, e: self.quit_app())
-        self.connect("key-press-event", self.on_key)
+        self.card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        self.card.get_style_context().add_class("context-menu-card")
+        self.card.set_halign(Gtk.Align.START)
+        self.card.set_valign(Gtk.Align.START)
+        self.card.set_margin_start(card_margin_left)
+        self.card.set_margin_top(38)
+        self.card.set_size_request(240, -1)
+        self.add(self.card)
 
-        card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
-        card.get_style_context().add_class("context-menu-card")
-        self.add(card)
+        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self.connect("button-press-event", self.on_button_press)
+        self.connect("key-press-event", self.on_key)
+        self.connect("destroy", lambda _: cleanup_pid())
 
         clients = get_all_clients()
         target_win = resolve_target_window(clients, cursor_x)
@@ -199,15 +230,15 @@ class AppContextMenu(Gtk.Window):
         s_lbl.get_style_context().add_class("app-subtitle")
         hdr.pack_start(t_lbl, False, False, 0)
         hdr.pack_start(s_lbl, False, False, 0)
-        card.pack_start(hdr, False, False, 0)
+        self.card.pack_start(hdr, False, False, 0)
 
-        # macOS style: List open windows belonging to this app (or other open windows)
+        # macOS style: List open windows belonging to this app
         matching_windows = [c for c in clients if c.get("class", "").lower() == win_class.lower()]
         if len(matching_windows) > 1:
             lbl_section = Gtk.Label(label="Open Windows")
             lbl_section.set_xalign(0.0)
             lbl_section.get_style_context().add_class("section-label")
-            card.pack_start(lbl_section, False, False, 0)
+            self.card.pack_start(lbl_section, False, False, 0)
 
             for mw in matching_windows:
                 mw_title = mw.get("title", "Window")[:30]
@@ -216,11 +247,11 @@ class AppContextMenu(Gtk.Window):
                 btn_w.get_child().set_xalign(0.0)
                 btn_w.get_style_context().add_class("menu-item")
                 btn_w.connect("clicked", self.wrap_cb(lambda a=mw_addr: self.action_focus(a)))
-                card.pack_start(btn_w, False, False, 0)
+                self.card.pack_start(btn_w, False, False, 0)
 
             div = Gtk.Box()
             div.get_style_context().add_class("divider")
-            card.pack_start(div, False, False, 2)
+            self.card.pack_start(div, False, False, 2)
 
         # Action Items
         items = [
@@ -237,7 +268,21 @@ class AppContextMenu(Gtk.Window):
             if is_danger:
                 btn.get_style_context().add_class("danger")
             btn.connect("clicked", self.wrap_cb(callback))
-            card.pack_start(btn, False, False, 0)
+            self.card.pack_start(btn, False, False, 0)
+
+    def on_draw(self, widget, cr):
+        cr.set_source_rgba(0, 0, 0, 0.001)
+        cr.paint()
+        return False
+
+    def on_button_press(self, widget, event):
+        alloc = self.card.get_allocation()
+        inside = (alloc.x <= event.x <= alloc.x + alloc.width and
+                  alloc.y <= event.y <= alloc.y + alloc.height)
+        if not inside:
+            self.quit_app()
+            return True
+        return False
 
     def apply_css(self):
         screen = Gdk.Screen.get_default()
@@ -290,6 +335,7 @@ class AppContextMenu(Gtk.Window):
         return False
 
     def quit_app(self):
+        cleanup_pid()
         self.close()
         Gtk.main_quit()
 

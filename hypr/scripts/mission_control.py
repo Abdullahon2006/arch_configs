@@ -74,7 +74,6 @@ window#mission-control {
 
 .win-card {
     min-width: 280px;
-    max-width: 380px;
     margin: 10px;
     padding: 16px;
     border-radius: 14px;

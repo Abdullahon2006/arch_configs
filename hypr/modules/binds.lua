@@ -52,7 +52,7 @@ hl.bind("SUPER + Up", hl.dsp.exec_cmd("python3 /home/simple/.config/hypr/scripts
 -- Move Focus with Arrow Keys
 hl.bind("SUPER + Left", hl.dsp.focus({ direction = "l" }))
 hl.bind("SUPER + Right", hl.dsp.focus({ direction = "r" }))
-hl.bind("SUPER + Up", hl.dsp.focus({ direction = "u" }))
+-- hl.bind("SUPER + Up", hl.dsp.focus({ direction = "u" })) (reserved for Mission Control)
 hl.bind("SUPER + Down", hl.dsp.focus({ direction = "d" }))
 
 -- Move Windows with Shift + Arrows
