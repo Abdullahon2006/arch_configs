@@ -1,0 +1,28 @@
+/* Typography and Spacing for GTK4 & Libadwaita */
+window, dialog {
+    letter-spacing: 0.12px;
+}
+
+/* Sidebar navigation in Settings */
+navigation-sidebar > listview > row {
+    min-height: 38px;
+    padding: 6px 10px;
+    margin: 1px 4px;
+    border-radius: 8px;
+}
+
+/* Action rows (settings items) */
+actionrow {
+    min-height: 48px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+actionrow .title {
+    margin-bottom: 2px;
+    font-weight: 600;
+}
+
+actionrow .subtitle {
+    margin-top: 2px;
+}

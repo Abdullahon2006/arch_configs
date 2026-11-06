@@ -25,6 +25,7 @@ class PowerMenu(BasePopup):
             ("󰤄  Suspend", "systemctl suspend"),
             ("󰒲  Hibernate", "systemctl hibernate"),
             ("󰌾  Lock Screen", "hyprlock"),
+            ("👥  Switch User", "busctl call org.freedesktop.DisplayManager /org/freedesktop/DisplayManager/Seat0 org.freedesktop.DisplayManager.Seat SwitchToGreeter"),
             ("󰍃  Log Out", "hyprctl dispatch 'hl.dsp.exit()'"),
         ]
 

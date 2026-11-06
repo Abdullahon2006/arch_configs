@@ -13,6 +13,9 @@ end
 -- hyprbars: macOS-style title bar with traffic-light buttons on the left
 -- -----------------------------------------------------------------------------
 if hl.plugin and hl.plugin.hyprbars then
+    local home = os.getenv("HOME") or ""
+    local scripts = home .. "/.config/hypr/scripts"
+
     hl.config({
         plugin = {
             hyprbars = {
@@ -33,12 +36,12 @@ if hl.plugin and hl.plugin.hyprbars then
                 bar_text_align = "center",
                 icon_on_hover = true,          -- glyphs appear only on hover, like macOS
                 inactive_button_color = "rgba(4f585eff)", -- grey dots on unfocused windows
-                on_double_click = dsp('hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" })'),
+                on_double_click = dsp('hl.dsp.exec_cmd("python3 ' .. scripts .. '/toggle_fullscreen_space.py")'),
             },
         },
     })
 
-    -- Buttons are placed from the aligned edge inwards: close, minimize, maximize
+    -- Buttons are placed from the aligned edge inwards: close, minimize/restore, space/maximize
     local fg = "rgba(1e2524ff)"
     hl.plugin.hyprbars.add_button({
         bg_color = "rgba(e67e80ff)", fg_color = fg, size = 13, icon = "",
@@ -46,11 +49,11 @@ if hl.plugin and hl.plugin.hyprbars then
     })
     hl.plugin.hyprbars.add_button({
         bg_color = "rgba(dbbc7fff)", fg_color = fg, size = 13, icon = "",
-        action = dsp('hl.dsp.window.move({ workspace = "special:minimized" })'),
+        action = dsp('hl.dsp.exec_cmd("python3 ' .. scripts .. '/toggle_scratchpad.py toggle")'),
     })
     hl.plugin.hyprbars.add_button({
         bg_color = "rgba(a7c080ff)", fg_color = fg, size = 13, icon = "",
-        action = dsp('hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" })'),
+        action = dsp('hl.dsp.exec_cmd("python3 ' .. scripts .. '/toggle_fullscreen_space.py")'),
     })
 
     -- Apps with their own header bar (GTK4/libadwaita) keep native buttons.
