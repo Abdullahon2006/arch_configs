@@ -36,10 +36,10 @@ hl.bind("ALT + SHIFT + Tab", hl.dsp.window.bring_to_top())
 hl.bind("SUPER + SHIFT + Tab", hl.dsp.window.cycle_next({ next = false }))
 hl.bind("SUPER + SHIFT + Tab", hl.dsp.window.bring_to_top())
 
--- Window Minimization / Hiding (scratchpad special workspace)
-hl.bind("SUPER + M", hl.dsp.window.move({ workspace = "special:minimized" }))
-hl.bind("SUPER + H", hl.dsp.window.move({ workspace = "special:minimized" }))
-hl.bind("SUPER + SHIFT + M", hl.dsp.workspace.toggle_special("minimized"))
+-- Window Minimization / Hiding (scratchpad special workspace with bidirectional restore)
+hl.bind("SUPER + M", hl.dsp.exec_cmd("python3 /home/simple/.config/hypr/scripts/toggle_scratchpad.py toggle"))
+hl.bind("SUPER + H", hl.dsp.exec_cmd("python3 /home/simple/.config/hypr/scripts/toggle_scratchpad.py toggle"))
+hl.bind("SUPER + SHIFT + M", hl.dsp.exec_cmd("python3 /home/simple/.config/hypr/scripts/toggle_scratchpad.py overlay"))
 
 -- Screenshots
 hl.bind("Print", hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | wl-copy && notify-send 'Screenshot' 'Copied to clipboard'"))

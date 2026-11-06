@@ -1,43 +1,50 @@
 #!/usr/bin/env python3
+"""
+Waybar Right-Click Context Menu (~/.config/waybar/scripts/app_menu.py)
+macOS-style application menu anchored to the clicked app or cursor position.
+Includes smooth transitions, window selection, spaces toggle, and Everforest styling.
+"""
+
 import json
 import os
+import signal
 import subprocess
 import sys
-import signal
 import gi
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('GtkLayerShell', '0.1')
 from gi.repository import Gtk, Gdk, GtkLayerShell
 
+PID_FILE = "/tmp/waybar_app_menu.pid"
+
 EVERFOREST_CSS = b"""
 * {
     font-family: "JetBrainsMono Nerd Font", "Inter", sans-serif;
-    font-size: 13px;
+    outline: none;
 }
 
-window {
-    background-color: transparent;
+window#app-context-menu {
+    background: transparent;
 }
 
 .context-menu-card {
-    background-color: rgba(20, 26, 26, 0.96);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-top: 1px solid rgba(255, 255, 255, 0.28);
-    border-radius: 14px;
-    padding: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+    background-color: rgba(30, 37, 36, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 8px 6px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
 .app-title-box {
-    padding: 6px 10px 8px 10px;
+    padding: 6px 12px 8px 12px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     margin-bottom: 4px;
 }
 
 .app-title {
     color: #7fbbb3;
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 700;
 }
 
@@ -49,26 +56,29 @@ window {
 
 .section-label {
     color: #859289;
-    font-size: 10px;
-    padding: 4px 10px 2px 10px;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 6px 12px 2px 12px;
 }
 
 .menu-item {
-    padding: 7px 12px;
-    border-radius: 8px;
     background: transparent;
-    color: #d3c6aa;
     border: none;
-    transition: background 0.12s ease;
+    border-radius: 6px;
+    color: #d3c6aa;
+    font-size: 12.5px;
+    padding: 6px 12px;
+    margin: 1px 0;
+    transition: all 0.1s ease;
 }
 
 .menu-item:hover {
-    background-color: rgba(255, 255, 255, 0.09);
+    background-color: rgba(127, 187, 179, 0.22);
     color: #ffffff;
 }
 
 .menu-item.danger:hover {
-    background-color: rgba(230, 126, 128, 0.18);
+    background-color: rgba(230, 126, 128, 0.25);
     color: #e67e80;
 }
 
@@ -79,27 +89,33 @@ window {
 }
 """
 
-PID_FILE = "/tmp/waybar_app_menu.pid"
-
 def handle_singleton():
     if os.path.exists(PID_FILE):
         try:
             with open(PID_FILE, "r") as f:
                 old_pid = int(f.read().strip())
             os.kill(old_pid, signal.SIGTERM)
-            os.remove(PID_FILE)
-            sys.exit(0)
         except Exception:
             pass
-    with open(PID_FILE, "w") as f:
-        f.write(str(os.getpid()))
-
-def cleanup_pid():
-    if os.path.exists(PID_FILE):
         try:
             os.remove(PID_FILE)
         except Exception:
             pass
+    try:
+        with open(PID_FILE, "w") as f:
+            f.write(str(os.getpid()))
+    except Exception:
+        pass
+
+def cleanup_pid():
+    try:
+        if os.path.exists(PID_FILE):
+            with open(PID_FILE, "r") as f:
+                saved = int(f.read().strip())
+            if saved == os.getpid():
+                os.remove(PID_FILE)
+    except Exception:
+        pass
 
 def get_signature():
     sig = os.environ.get("HYPRLAND_INSTANCE_SIGNATURE", "")
@@ -124,11 +140,11 @@ def run_cmd(cmd):
         return ""
 
 def dispatch_lua(lua_str):
-    run_cmd(f"hyprctl dispatch '{lua_str}'")
+    return run_cmd(f"hyprctl dispatch '{lua_str}'")
 
 def get_cursor_pos():
-    out = run_cmd("hyprctl cursorpos -j 2>/dev/null || hyprctl cursorpos")
-    if out.startswith("{"):
+    out = run_cmd("hyprctl cursorpos -j")
+    if out:
         try:
             data = json.loads(out)
             return int(data.get("x", 200)), int(data.get("y", 15))
@@ -211,13 +227,19 @@ class AppContextMenu(Gtk.Window):
             win_class = target_win.get("class", "Application")
             win_title = target_win.get("title", "Active Window")
             win_addr = target_win.get("address", "")
+            win_ws = str(target_win.get("workspace", {}).get("name", "1"))
+            win_fs = target_win.get("fullscreen", 0)
         else:
             win_class = "Desktop"
             win_title = "No Active Application"
             win_addr = ""
+            win_ws = "1"
+            win_fs = 0
 
         self.target_addr = win_addr
         self.target_class = win_class
+        self.target_ws = win_ws
+        self.target_fs = win_fs
 
         # Header with App Name and Title
         hdr = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
@@ -243,10 +265,11 @@ class AppContextMenu(Gtk.Window):
             for mw in matching_windows:
                 mw_title = mw.get("title", "Window")[:30]
                 mw_addr = mw.get("address", "")
-                btn_w = Gtk.Button(label=f"🪟  {mw_title}")
+                mw_ws = str(mw.get("workspace", {}).get("name", "1"))
+                btn_w = Gtk.Button(label=f"  {mw_title}")
                 btn_w.get_child().set_xalign(0.0)
                 btn_w.get_style_context().add_class("menu-item")
-                btn_w.connect("clicked", self.wrap_cb(lambda a=mw_addr: self.action_focus(a)))
+                btn_w.connect("clicked", self.wrap_cb(lambda a=mw_addr, w=mw_ws: self.action_focus(a, w)))
                 self.card.pack_start(btn_w, False, False, 0)
 
             div = Gtk.Box()
@@ -254,10 +277,17 @@ class AppContextMenu(Gtk.Window):
             self.card.pack_start(div, False, False, 2)
 
         # Action Items
+        is_space_or_fs = win_ws.startswith("space:") or win_fs != 0
+        space_label = "⤢  Exit Fullscreen Space" if is_space_or_fs else "⤢  Toggle Fullscreen Space"
+
+        is_minimized = win_ws.startswith("special:")
+        min_label = "󰘖  Restore Window to Workspace" if is_minimized else "󰘖  Minimize to Scratchpad"
+        min_cb = self.action_restore if is_minimized else self.action_minimize
+
         items = [
             ("➕  New Window", self.action_new_window, False),
-            ("⤢  Toggle Fullscreen Space", self.action_toggle_space, False),
-            ("󰘖  Minimize to Scratchpad", self.action_minimize, False),
+            (space_label, self.action_toggle_space, False),
+            (min_label, min_cb, False),
             ("󰅖  Close Window", self.action_close, True),
         ]
 
@@ -296,8 +326,17 @@ class AppContextMenu(Gtk.Window):
             self.quit_app()
         return handler
 
-    def action_focus(self, address):
-        if address:
+    def action_focus(self, address, ws_name=""):
+        sig = get_signature()
+        env = os.environ.copy()
+        if sig:
+            env["HYPRLAND_INSTANCE_SIGNATURE"] = sig
+        if str(ws_name).startswith("special:"):
+            subprocess.Popen(f"python3 /home/simple/.config/hypr/scripts/toggle_scratchpad.py restore '{address}'", shell=True, env=env)
+        elif ws_name:
+            target = f"name:{ws_name}" if str(ws_name).startswith("space:") else str(ws_name)
+            subprocess.Popen(f"hyprctl dispatch 'hl.dsp.focus({{ workspace = \"{target}\" }})'; hyprctl dispatch 'hl.dsp.focus({{ window = \"address:{address}\" }})'", shell=True, env=env)
+        elif address:
             dispatch_lua(f'hl.dsp.focus({{ window = "address:{address}" }})')
 
     def action_new_window(self):
@@ -317,10 +356,20 @@ class AppContextMenu(Gtk.Window):
         subprocess.Popen(f"python3 /home/simple/.config/hypr/scripts/toggle_fullscreen_space.py {arg}", shell=True, env=env)
 
     def action_minimize(self):
-        if self.target_addr:
-            dispatch_lua(f'hl.dsp.window.move({{ workspace = "special:minimized", address = "{self.target_addr}" }})')
-        else:
-            dispatch_lua('hl.dsp.window.move({{ workspace = "special:minimized" }})')
+        sig = get_signature()
+        env = os.environ.copy()
+        if sig:
+            env["HYPRLAND_INSTANCE_SIGNATURE"] = sig
+        arg = f"'{self.target_addr}'" if self.target_addr else ""
+        subprocess.Popen(f"python3 /home/simple/.config/hypr/scripts/toggle_scratchpad.py minimize {arg}", shell=True, env=env)
+
+    def action_restore(self):
+        sig = get_signature()
+        env = os.environ.copy()
+        if sig:
+            env["HYPRLAND_INSTANCE_SIGNATURE"] = sig
+        arg = f"'{self.target_addr}'" if self.target_addr else ""
+        subprocess.Popen(f"python3 /home/simple/.config/hypr/scripts/toggle_scratchpad.py restore {arg}", shell=True, env=env)
 
     def action_close(self):
         if self.target_addr:
