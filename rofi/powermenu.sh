@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 # =============================================================================
 # Power & Session Menu (~/.config/rofi/powermenu.sh)
-# GTK Layer Shell Menu with outside-click dismissal
+# Uses the shared glass theme (~/.config/rofi/theme.rasi) positioned under Waybar
 # =============================================================================
-
-exec python3 ~/.config/waybar/menus/power.py "$@"
-
 
 opt_power="󰐥  Power Off"
 opt_reboot="󰜉  Restart"
@@ -18,57 +15,20 @@ opt_logout="󰍃  Log Out"
 options="$opt_power\n$opt_reboot\n$opt_suspend\n$opt_hibernate\n$opt_lock\n$opt_switch\n$opt_logout"
 
 chosen=$(echo -e "$options" | rofi -dmenu -i -p "Power" \
+    -theme ~/.config/rofi/theme.rasi \
     -click-to-exit \
     -theme-str '
-    * {
-        font: "JetBrainsMono Nerd Font 10.5";
-        background-color: transparent;
-        text-color: #d3c6aa;
-    }
     window {
+        width: 250px;
         location: northeast;
         anchor: northeast;
-        x-offset: -12px;
-        y-offset: 46px;
-        width: 260px;
-        background-color: #141a1af2;
-        border: 1px;
-        border-color: #ffffff24;
-        border-radius: 18px;
-        padding: 14px;
+        x-offset: -10px;
+        y-offset: 44px;
+        border-radius: 16px;
     }
-    mainbox {
-        orientation: vertical;
-        children: [ listview ];
-    }
-    listview {
-        lines: 7;
-        fixed-height: false;
-        spacing: 4px;
-        scrollbar: false;
-    }
-    element {
-        padding: 8px 12px;
-        border-radius: 10px;
-        background-color: transparent;
-        text-color: #d3c6aa;
-    }
-    element normal.normal {
-        background-color: transparent;
-        text-color: #d3c6aa;
-    }
-    element alternate.normal {
-        background-color: transparent;
-        text-color: #d3c6aa;
-    }
-    element selected.normal {
-        background-color: #7fbbb3;
-        text-color: #1e2524;
-    }
-    element-text {
-        background-color: transparent;
-        text-color: inherit;
-    }
+    mainbox  { children: [ listview ]; }
+    listview { lines: 7; spacing: 4px; }
+    element  { padding: 10px 14px; border-radius: 10px; }
 ')
 
 case "$chosen" in
