@@ -15,6 +15,7 @@
 !/gtk-4.0/
 !/fontconfig/
 !/assets/
+!/docs/
 
 # Python cache
 **/__pycache__/
